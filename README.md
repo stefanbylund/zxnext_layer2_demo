@@ -21,8 +21,7 @@ set of Unix commands to your path.
 
 2. Install the latest version of [z88dk](https://github.com/z88dk/z88dk) and the
 [ZEsarUX](https://sourceforge.net/projects/zesarux/) or
-[CSpect](https://dailly.blogspot.se/2017/07/new-cspect-zx-spectrum-next-emulator.html)
-emulator.
+[CSpect](https://dailly.blogspot.se/) emulator.
 
 3. Download [zxnext_layer2](https://github.com/stefanbylund/zxnext_layer2/blob/master/build/zxnext_layer2.zip)
 and unpack it in a suitable place.
@@ -43,7 +42,7 @@ build a TAP file or an SNA file if BUILD_SNA=true is specified:
 
 7. For the ZEsarUX emulator, copy the files screen1.nxi and screen2.nxi from
 \<zxnext_layer2_demo_folder\>/src to \<zesarux\>/extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE.
-For the CSpect emulator, pass the option -mmc=\<zxnext_layer2_demo_folder\>/src.
+For the CSpect emulator, pass the option -mmc=\<zxnext_layer2_demo_folder\>/src/.
 
 8. Run the zxnext_layer2_demo/bin/\<compiler-flavour\>/zxnext_layer2_demo.tap
 file in the ZEsarUX emulator or the
