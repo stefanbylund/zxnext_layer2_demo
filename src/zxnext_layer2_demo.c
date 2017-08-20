@@ -76,6 +76,10 @@ static void test_blit_transparent(off_screen_buffer_t *off_screen_buffer);
 
 static void test_blit_transparent_many(void);
 
+static void test_scroll_screen_horizontally(void);
+
+static void test_scroll_screen_vertically(void);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -246,11 +250,17 @@ static void select_test(void)
         case 26:
             test_blit_transparent_many();
             break;
+        case 27:
+            test_scroll_screen_horizontally();
+            break;
+        case 28:
+            test_scroll_screen_vertically();
+            break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 27;
+    test_number = (test_number + 1) % 29;
 }
 
 static void test_clear_screen(off_screen_buffer_t *off_screen_buffer)
@@ -570,6 +580,80 @@ static void test_blit_transparent_many(void)
     {
         layer2_blit_transparent(rand() % 256, rand() % 192, sprite, 16, 16, NULL);
     }
+}
+
+static void test_scroll_screen_horizontally(void)
+{
+    uint8_t offset_x = 0;
+    bool increment = true;
+
+    layer2_load_screen("screen1.nxi", NULL);
+
+    // 0, 1, 2, ..., 254, 255, 0, 255, 254, ..., 2, 1, 0, ...
+
+    while (!in_inkey())
+    {
+        intrinsic_halt();
+
+        layer2_set_offset_x(offset_x);
+
+        if (increment)
+        {
+            offset_x++;
+        }
+        else
+        {
+            offset_x--;
+        }
+
+        if (offset_x == 0)
+        {
+            increment = !increment;
+        }
+    }
+
+    layer2_set_offset_x(0);
+}
+
+static void test_scroll_screen_vertically(void)
+{
+    uint8_t offset_y = 0;
+    bool increment = true;
+
+    layer2_load_screen("screen1.nxi", NULL);
+
+    // 0, 1, 2, ..., 190, 191, 0, 191, 190, ..., 2, 1, 0, ...
+
+    while (!in_inkey())
+    {
+        intrinsic_halt();
+
+        layer2_set_offset_y(offset_y);
+
+        if (increment)
+        {
+            offset_y++;
+            if (offset_y == 192)
+            {
+                offset_y = 0;
+            }
+        }
+        else
+        {
+            offset_y--;
+            if (offset_y == 255)
+            {
+                offset_y = 191;
+            }
+        }
+
+        if (offset_y == 0)
+        {
+            increment = !increment;
+        }
+    }
+
+    layer2_set_offset_y(0);
 }
 
 int main(void)
