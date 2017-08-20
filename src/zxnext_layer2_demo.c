@@ -80,6 +80,8 @@ static void test_scroll_screen_horizontally(void);
 
 static void test_scroll_screen_vertically(void);
 
+static void test_scroll_screen_diagonally(void);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -256,11 +258,14 @@ static void select_test(void)
         case 28:
             test_scroll_screen_vertically();
             break;
+        case 29:
+            test_scroll_screen_diagonally();
+            break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 29;
+    test_number = (test_number + 1) % 30;
 }
 
 static void test_clear_screen(off_screen_buffer_t *off_screen_buffer)
@@ -653,6 +658,63 @@ static void test_scroll_screen_vertically(void)
         }
     }
 
+    layer2_set_offset_y(0);
+}
+
+static void test_scroll_screen_diagonally(void)
+{
+    uint8_t offset_x = 0;
+    uint8_t offset_y = 0;
+    bool increment_x = true;
+    bool increment_y = true;
+
+    layer2_load_screen("screen1.nxi", NULL);
+
+    while (!in_inkey())
+    {
+        intrinsic_halt();
+
+        layer2_set_offset_x(offset_x);
+        layer2_set_offset_y(offset_y);
+
+        if (increment_x)
+        {
+            offset_x++;
+        }
+        else
+        {
+            offset_x--;
+        }
+
+        if (increment_y)
+        {
+            offset_y++;
+            if (offset_y == 192)
+            {
+                offset_y = 0;
+            }
+        }
+        else
+        {
+            offset_y--;
+            if (offset_y == 255)
+            {
+                offset_y = 191;
+            }
+        }
+
+        if (offset_x == 0)
+        {
+            increment_x = !increment_x;
+        }
+
+        if (offset_y == 0)
+        {
+            increment_y = !increment_y;
+        }
+    }
+
+    layer2_set_offset_x(0);
     layer2_set_offset_y(0);
 }
 
