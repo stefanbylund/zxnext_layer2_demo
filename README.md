@@ -9,8 +9,10 @@ This program is also used for regression testing of
 contains a set of screens. The first set of screens tests all drawing functions.
 The second set of screens are the same as the first set but all drawing is done
 on a layer 2 off-screen buffer. The third set of screens calls all drawing
-functions repeatedly to give a visual indication of their performance. Switch
-between the screens by pressing any key.
+functions repeatedly to give a visual indication of their performance. The
+fourth set of screens tests horizontal and vertical hardware scrolling of a
+single screen and between multiple screens. Switch between the screens by
+pressing any key.
 
 ## How to Use
 
