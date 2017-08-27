@@ -40,9 +40,9 @@ build a TAP file or an SNA file if BUILD_SNA=true is specified:
 
 > make all [BUILD_SNA=true]
 
-7. For the ZEsarUX emulator, copy the files screen1.nxi and screen2.nxi from
-\<zxnext_layer2_demo_folder\>/src to \<zesarux\>/extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE.
-For the CSpect emulator, pass the option -mmc=\<zxnext_layer2_demo_folder\>/src/.
+7. For the ZEsarUX emulator, copy all *.nxi files from \<zxnext_layer2_demo_folder\>/resources
+to \<zesarux\>/extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE. For the CSpect
+emulator, pass the option -mmc=\<zxnext_layer2_demo_folder\>/resources/.
 
 8. Run the zxnext_layer2_demo/bin/\<compiler-flavour\>/zxnext_layer2_demo.tap
 file in the ZEsarUX emulator or the
@@ -67,7 +67,7 @@ mode, start it with the following options:
 mode, start it with the options below. Note that the -mmc path must end with a
 / or \ character!
 
-> CSpect -zxnext -s7 -mmc=\<zxnext_layer2_demo_folder\>/src/ zxnext_layer2_demo.sna
+> CSpect -zxnext -s7 -mmc=\<zxnext_layer2_demo_folder\>/resources/ zxnext_layer2_demo.sna
 
 ## License
 

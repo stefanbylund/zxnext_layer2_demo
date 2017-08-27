@@ -1,3 +1,5 @@
 * Switch to zxn target in z88dk when stable.
 
 * Set CPU speed to 14 or 28 MHz when supported by ZEsarUX.
+
+* Add test for multi-screen diagonal scrolling.

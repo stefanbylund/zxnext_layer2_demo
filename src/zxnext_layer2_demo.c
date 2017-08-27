@@ -17,8 +17,7 @@
 #include "zxnext_registers.h"
 #include "zxnext_layer2.h"
 
-// FIXME: CRT_ORG_CODE = 0x6164 doesn't work for snapshot images...
-#pragma output CRT_ORG_CODE = 0x6200
+#pragma output CRT_ORG_CODE = 0x6164
 #pragma output REGISTER_SP = 0xBFFF
 #pragma output CLIB_MALLOC_HEAP_SIZE = 0
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
