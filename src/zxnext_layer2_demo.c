@@ -82,6 +82,10 @@ static void test_scroll_screen_vertically(void);
 
 static void test_scroll_screen_diagonally(void);
 
+static void test_scroll_multi_screen_horizontally(void);
+
+static void test_scroll_multi_screen_vertically(void);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -261,11 +265,17 @@ static void select_test(void)
         case 29:
             test_scroll_screen_diagonally();
             break;
+        case 30:
+            test_scroll_multi_screen_horizontally();
+            break;
+        case 31:
+            test_scroll_multi_screen_vertically();
+            break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 30;
+    test_number = (test_number + 1) % 32;
 }
 
 static void test_clear_screen(off_screen_buffer_t *off_screen_buffer)
@@ -715,6 +725,122 @@ static void test_scroll_screen_diagonally(void)
     }
 
     layer2_set_offset_x(0);
+    layer2_set_offset_y(0);
+}
+
+/*
+ * Scroll horizontally between three screens numbered 0, 1 and 2 with the file
+ * names wide1.nxi, wide2.nxi and wide3.nxi. The first screen file is loaded
+ * into the layer 2 screen. The screen file to be scrolled in is loaded into an
+ * off-screen buffer. When the screen being scrolled in is completely scrolled
+ * in, the next screen file to be scrolled in is loaded into the off-screen
+ * buffer. When the last screen is completely scrolled in, the scroll direction
+ * is reversed. The actual scrolling is performed in the vertical blanking
+ * interval and is done by shifting the columns of the screen by one pixel and
+ * blitting the corresponding column from the off-screen buffer of the screen
+ * being scrolled in.
+ */
+static void test_scroll_multi_screen_horizontally(void)
+{
+    static const char *screen[3] = {"wide1.nxi", "wide2.nxi", "wide3.nxi"};
+    uint8_t next_screen = 0;
+    uint8_t offset_x = 0;
+    uint8_t fill_x;
+    bool increment = true;
+
+    layer2_load_screen(screen[next_screen], NULL);
+
+    while (!in_inkey())
+    {
+        if (offset_x == 0)
+        {
+            next_screen = increment ? next_screen + 1 : next_screen - 1;
+            layer2_load_screen(screen[next_screen], &off_screen_buffer);
+        }
+
+        intrinsic_halt();
+
+        if (increment)
+        {
+            fill_x = offset_x;
+            offset_x++;
+        }
+        else
+        {
+            offset_x--;
+            fill_x = offset_x;
+        }
+
+        layer2_set_offset_x(offset_x);
+        layer2_blit_off_screen_column(fill_x, &off_screen_buffer, fill_x);
+
+        if (offset_x == 0)
+        {
+            if ((next_screen == 0) || (next_screen == 2))
+            {
+                increment = !increment;
+            }
+        }
+    }
+
+    layer2_set_offset_x(0);
+}
+
+/*
+ * Scroll vertically between three screens numbered 0, 1 and 2 with the file
+ * names tall1.nxi, tall2.nxi and tall3.nxi. The first screen file is loaded
+ * into the layer 2 screen. The screen file to be scrolled in is loaded into an
+ * off-screen buffer. When the screen being scrolled in is completely scrolled
+ * in, the next screen file to be scrolled in is loaded into the off-screen
+ * buffer. When the last screen is completely scrolled in, the scroll direction
+ * is reversed. The actual scrolling is performed in the vertical blanking
+ * interval and is done by shifting the rows of the screen by one pixel and
+ * blitting the corresponding row from the off-screen buffer of the screen
+ * being scrolled in.
+ */
+static void test_scroll_multi_screen_vertically(void)
+{
+    static const char *screen[3] = {"tall1.nxi", "tall2.nxi", "tall3.nxi"};
+    uint8_t next_screen = 0;
+    uint8_t offset_y = 0;
+    uint8_t fill_y;
+    bool increment = true;
+
+    layer2_load_screen(screen[next_screen], NULL);
+
+    while (!in_inkey())
+    {
+        if (offset_y == 0)
+        {
+            next_screen = increment ? next_screen + 1 : next_screen - 1;
+            layer2_load_screen(screen[next_screen], &off_screen_buffer);
+        }
+
+        intrinsic_halt();
+
+        if (increment)
+        {
+            fill_y = offset_y;
+            offset_y = INC_Y(offset_y);
+        }
+        else
+        {
+            offset_y = DEC_Y(offset_y);
+            fill_y = offset_y;
+        }
+
+        layer2_set_offset_y(offset_y);
+        layer2_blit_off_screen_row(fill_y, &off_screen_buffer, fill_y);
+
+        if (offset_y == 0)
+        {
+            if ((next_screen == 0) || (next_screen == 2))
+            {
+                increment = !increment;
+            }
+        }
+    }
+
     layer2_set_offset_y(0);
 }
 
