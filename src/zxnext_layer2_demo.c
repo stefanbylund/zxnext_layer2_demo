@@ -610,8 +610,6 @@ static void test_scroll_screen_horizontally(void)
     {
         intrinsic_halt();
 
-        layer2_set_offset_x(offset_x);
-
         if (increment)
         {
             offset_x++;
@@ -620,6 +618,8 @@ static void test_scroll_screen_horizontally(void)
         {
             offset_x--;
         }
+
+        layer2_set_offset_x(offset_x);
 
         if (offset_x == 0)
         {
@@ -643,24 +643,16 @@ static void test_scroll_screen_vertically(void)
     {
         intrinsic_halt();
 
-        layer2_set_offset_y(offset_y);
-
         if (increment)
         {
-            offset_y++;
-            if (offset_y == 192)
-            {
-                offset_y = 0;
-            }
+            offset_y = INC_Y(offset_y);
         }
         else
         {
-            offset_y--;
-            if (offset_y == 255)
-            {
-                offset_y = 191;
-            }
+            offset_y = DEC_Y(offset_y);
         }
+
+        layer2_set_offset_y(offset_y);
 
         if (offset_y == 0)
         {
@@ -684,9 +676,6 @@ static void test_scroll_screen_diagonally(void)
     {
         intrinsic_halt();
 
-        layer2_set_offset_x(offset_x);
-        layer2_set_offset_y(offset_y);
-
         if (increment_x)
         {
             offset_x++;
@@ -698,20 +687,15 @@ static void test_scroll_screen_diagonally(void)
 
         if (increment_y)
         {
-            offset_y++;
-            if (offset_y == 192)
-            {
-                offset_y = 0;
-            }
+            offset_y = INC_Y(offset_y);
         }
         else
         {
-            offset_y--;
-            if (offset_y == 255)
-            {
-                offset_y = 191;
-            }
+            offset_y = DEC_Y(offset_y);
         }
+
+        layer2_set_offset_x(offset_x);
+        layer2_set_offset_y(offset_y);
 
         if (offset_x == 0)
         {
