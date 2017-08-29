@@ -20,6 +20,7 @@ This download contains the following binaries and resources:
 
 * zxnext_layer2_demo/zxnext_layer2_demo.tap
 * zxnext_layer2_demo/zxnext_layer2_demo.sna
+* zxnext_layer2_demo/zxnext_layer2_demo.c
 * zxnext_layer2_demo/*.nxi
 * zxnext_layer2_demo/readme.txt
 
