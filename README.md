@@ -1,20 +1,37 @@
 # Demonstration of zxnext_layer2
 
 The **zxnext_layer2_demo** project contains an example program demonstrating
-how to use the [zxnext_layer2](https://github.com/stefanbylund/zxnext_layer2) C
-API for using the layer 2 screen of the Sinclair ZX Spectrum Next.
+how to use the [zxnext_layer2](https://github.com/stefanbylund/zxnext_layer2)
+C API for the layer 2 screen of the Sinclair ZX Spectrum Next. This program is
+also used for regression testing of the zxnext_layer2 project.
 
-This program is also used for regression testing of
-[zxnext_layer2](https://github.com/stefanbylund/zxnext_layer2). The program
-contains a set of screens. The first set of screens tests all drawing functions.
-The second set of screens are the same as the first set but all drawing is done
-on a layer 2 off-screen buffer. The third set of screens calls all drawing
-functions repeatedly to give a visual indication of their performance. The
-fourth set of screens tests horizontal and vertical hardware scrolling of a
-single screen and between multiple screens. Switch between the screens by
-pressing any key.
+The program consists of 32 different screens. Switch between the screens by
+pressing any key. The first set of screens tests all drawing functions. The
+second set of screens are the same as the first set but all drawing is done on a
+layer 2 off-screen buffer. The third set of screens calls all drawing functions
+repeatedly to give a visual indication of their performance. The fourth set of
+screens tests horizontal and vertical hardware scrolling of a single screen and
+between multiple screens.
 
-## How to Use
+## Download
+
+The latest version of this program can be downloaded [here](build/zxnext_layer2_demo.zip).
+This download contains the following binaries and resources:
+
+* zxnext_layer2_demo/zxnext_layer2_demo.tap
+* zxnext_layer2_demo/zxnext_layer2_demo.sna
+* zxnext_layer2_demo/*.nxi
+* zxnext_layer2_demo/readme.txt
+
+The included readme.txt file explains how to start the program.
+
+If you want to build the zxnext_layer2_demo program yourself, see the "How to Build"
+section below.
+
+## How to Build
+
+If you want to build the zxnext_layer2_demo program yourself, follow the steps
+below:
 
 1. On Windows, you need [MinGW](http://www.mingw.org/),
 [UnxUtils](https://sourceforge.net/projects/unxutils/) or
@@ -56,8 +73,9 @@ tools need to catch up with the latest specs, it is important to use the latest
 version of zxnext_layer2, z88dk and ZEsarUX or CSpect.
 
 **Tip:** If you don't care for makefiles or don't want to install
-MinGW/UnxUtils/Cygwin on Windows, it is quite easy to build zxnext_layer2_demo
-manually by extracting the z88dk command-line invocation in the Makefile.
+MinGW/UnxUtils/Cygwin on Windows, you can build zxnext_layer2_demo manually
+by using the z88dk command-line invocation located in the header of the
+zxnext_layer2_demo.c source file.
 
 **Tip:** To start the ZEsarUX emulator directly in Sinclair ZX Spectrum Next
 mode, start it with the following options:

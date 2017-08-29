@@ -9,6 +9,10 @@ MKDIR := mkdir -p
 
 RM := rm -rf
 
+CP := cp
+
+ZIP := zip -r -q
+
 ZXNEXT_LAYER2 := ../zxnext_layer2
 
 ZXNEXT_LAYER2_INCLUDE := $(ZXNEXT_LAYER2)/include
@@ -59,5 +63,19 @@ debug_sdcc_ix: all_sdcc_ix
 
 debug_sdcc_iy: all_sdcc_iy
 
+distro:
+	$(MAKE) clean all
+	$(MAKE) all BUILD_SNA=true
+	$(RM) tmp
+	$(MKDIR) tmp/zxnext_layer2_demo
+	$(CP) bin/sdcc_iy/zxnext_layer2_demo.tap tmp/zxnext_layer2_demo
+	$(CP) bin/sdcc_iy/zxnext_layer2_demo.sna tmp/zxnext_layer2_demo
+	$(CP) resources/*.nxi tmp/zxnext_layer2_demo
+	$(CP) src/zxnext_layer2_demo.c tmp/zxnext_layer2_demo
+	$(CP) readme.txt tmp/zxnext_layer2_demo
+	$(RM) build/zxnext_layer2_demo.zip
+	cd tmp; $(ZIP) ../build/zxnext_layer2_demo.zip zxnext_layer2_demo
+	$(RM) tmp
+
 clean:
-	$(RM) bin zcc_opt.def zcc_proj.lst src/*.lis
+	$(RM) bin tmp zcc_opt.def zcc_proj.lst src/*.lis

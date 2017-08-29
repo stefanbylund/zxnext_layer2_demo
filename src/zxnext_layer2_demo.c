@@ -2,6 +2,10 @@
  * Stefan Bylund 2017
  *
  * A layer 2 screen demo program for Sinclair ZX Spectrum Next.
+ *
+ * zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy --max-allocs-per-node200000
+ *   -L<zxnext_layer2>/lib/sdcc_iy -lzxnext_layer2 -I<zxnext_layer2>/include
+ *   zxnext_layer2_demo.c -o zxnext_layer2_demo -create-app [-Cz"--sna"]
  ******************************************************************************/
 
 #include <arch/zx.h>
