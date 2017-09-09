@@ -89,6 +89,10 @@ static void test_scroll_multi_screen_horizontally(void);
 
 static void test_scroll_multi_screen_vertically(void);
 
+static void test_layer2_over_ula(void);
+
+static void test_ula_over_layer2(void);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -274,11 +278,17 @@ static void select_test(void)
         case 31:
             test_scroll_multi_screen_vertically();
             break;
+        case 32:
+            test_layer2_over_ula();
+            break;
+        case 33:
+            test_ula_over_layer2();
+            break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 32;
+    test_number = (test_number + 1) % 34;
 }
 
 static void test_clear_screen(off_screen_buffer_t *off_screen_buffer)
@@ -829,6 +839,52 @@ static void test_scroll_multi_screen_vertically(void)
     }
 
     layer2_set_offset_y(0);
+}
+
+static void test_layer2_over_ula(void)
+{
+    // By default, the layer 2 screen is over the ULA screen.
+    // Draw a filled rectangle with the transparency colour in the middle
+    // of the layer 2 screen so the underlying ULA screen shows through.
+
+    zx_cls(INK_BLACK | PAPER_WHITE);
+    printAt(12, 11, "ULA SCREEN");
+
+    layer2_clear_screen(0x37, NULL);
+    layer2_draw_text(5, 9, "LAYER 2 SCREEN", 0x88, NULL);
+    layer2_fill_rect(64, 80, 128, 40, 0xE3, NULL);
+
+    in_wait_key();
+    // Reset to default settings.
+    zx_cls(INK_BLACK | PAPER_WHITE);
+}
+
+static void test_ula_over_layer2(void)
+{
+    struct r_Rect8 rect = {8, 16, 10, 5};
+
+    // Set the ULA screen to be over the layer 2 screen.
+    // Draw a filled rectangle with the transparency colour in the middle
+    // of the ULA screen so the underlying layer 2 screen shows through.
+
+    // FIXME: I can only get ULA transparency to work when
+    // the transparency colour is set to black (0x00)...
+
+    zx_cls(INK_BLACK | PAPER_WHITE);
+    printAt(5, 11, "ULA SCREEN");
+    zx_cls_wc_attr(&rect, PAPER_BLACK);
+
+    layer2_clear_screen(0x37, NULL);
+    layer2_draw_text(12, 9, "LAYER 2 SCREEN", 0x88, NULL);
+
+    layer2_set_layer_priorities(LAYER_PRIORITIES_S_U_L);
+    layer2_set_global_transparency_color(0x00);
+
+    in_wait_key();
+    // Reset to default settings.
+    zx_cls(INK_BLACK | PAPER_WHITE);
+    layer2_set_layer_priorities(LAYER_PRIORITIES_S_L_U);
+    layer2_set_global_transparency_color(0xE3);
 }
 
 int main(void)
