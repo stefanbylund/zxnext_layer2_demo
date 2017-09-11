@@ -27,6 +27,8 @@
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
 
+#define IS_OFF_SCREEN(screen) (((screen) != NULL) && ((screen)->screen_type == OFF_SCREEN))
+
 #define printAt(row, col, str) printf("\x16%c%c%s", (row), (col), (str))
 
 /*******************************************************************************
@@ -43,39 +45,39 @@ static void init_tests(void);
 
 static void select_test(void);
 
-static void test_clear_screen(off_screen_buffer_t *off_screen_buffer);
+static void test_clear_screen(layer2_screen_t *screen);
 
 static void test_clear_screen_many(void);
 
-static void test_load_screen(off_screen_buffer_t *off_screen_buffer);
+static void test_load_screen(layer2_screen_t *screen);
 
 static void test_load_screen_many(void);
 
-static void test_draw_pixel(off_screen_buffer_t *off_screen_buffer);
+static void test_draw_pixel(layer2_screen_t *screen);
 
 static void test_draw_pixel_many(void);
 
-static void test_draw_line(off_screen_buffer_t *off_screen_buffer);
+static void test_draw_line(layer2_screen_t *screen);
 
 static void test_draw_line_many(void);
 
-static void test_draw_rect(off_screen_buffer_t *off_screen_buffer);
+static void test_draw_rect(layer2_screen_t *screen);
 
 static void test_draw_rect_many(void);
 
-static void test_fill_rect(off_screen_buffer_t *off_screen_buffer);
+static void test_fill_rect(layer2_screen_t *screen);
 
 static void test_fill_rect_many(void);
 
-static void test_draw_text(off_screen_buffer_t *off_screen_buffer);
+static void test_draw_text(layer2_screen_t *screen);
 
 static void test_draw_text_many(void);
 
-static void test_blit(off_screen_buffer_t *off_screen_buffer);
+static void test_blit(layer2_screen_t *screen);
 
 static void test_blit_many(void);
 
-static void test_blit_transparent(off_screen_buffer_t *off_screen_buffer);
+static void test_blit_transparent(layer2_screen_t *screen);
 
 static void test_blit_transparent_many(void);
 
@@ -99,7 +101,7 @@ static void test_ula_over_layer2(void);
 
 static uint8_t test_number = 0;
 
-static off_screen_buffer_t off_screen_buffer = {0, 1, 3};
+static layer2_screen_t off_screen = {OFF_SCREEN, 0, 1, 3};
 
 static uint8_t tall_sprite[192];
 
@@ -210,31 +212,31 @@ static void select_test(void)
             test_blit_transparent(NULL);
             break;
         case 9:
-            test_clear_screen(&off_screen_buffer);
+            test_clear_screen(&off_screen);
             break;
         case 10:
-            test_load_screen(&off_screen_buffer);
+            test_load_screen(&off_screen);
             break;
         case 11:
-            test_draw_pixel(&off_screen_buffer);
+            test_draw_pixel(&off_screen);
             break;
         case 12:
-            test_draw_line(&off_screen_buffer);
+            test_draw_line(&off_screen);
             break;
         case 13:
-            test_draw_rect(&off_screen_buffer);
+            test_draw_rect(&off_screen);
             break;
         case 14:
-            test_fill_rect(&off_screen_buffer);
+            test_fill_rect(&off_screen);
             break;
         case 15:
-            test_draw_text(&off_screen_buffer);
+            test_draw_text(&off_screen);
             break;
         case 16:
-            test_blit(&off_screen_buffer);
+            test_blit(&off_screen);
             break;
         case 17:
-            test_blit_transparent(&off_screen_buffer);
+            test_blit_transparent(&off_screen);
             break;
         case 18:
             test_clear_screen_many();
@@ -291,13 +293,13 @@ static void select_test(void)
     test_number = (test_number + 1) % 34;
 }
 
-static void test_clear_screen(off_screen_buffer_t *off_screen_buffer)
+static void test_clear_screen(layer2_screen_t *screen)
 {
-    layer2_clear_screen(0xDB, off_screen_buffer);
+    layer2_clear_screen(0xDB, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -309,13 +311,13 @@ static void test_clear_screen_many(void)
     }
 }
 
-static void test_load_screen(off_screen_buffer_t *off_screen_buffer)
+static void test_load_screen(layer2_screen_t *screen)
 {
-    layer2_load_screen("screen1.nxi", off_screen_buffer);
+    layer2_load_screen("screen1.nxi", screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -332,48 +334,48 @@ static void test_load_screen_many(void)
     }
 }
 
-static void test_draw_pixel(off_screen_buffer_t *off_screen_buffer)
+static void test_draw_pixel(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_draw_pixel(0,   0,  0x03, off_screen_buffer);
-    layer2_draw_pixel(127, 0,  0x03, off_screen_buffer);
-    layer2_draw_pixel(255, 0,  0x03, off_screen_buffer);
-    layer2_draw_pixel(0,   31, 0x03, off_screen_buffer);
-    layer2_draw_pixel(127, 31, 0x03, off_screen_buffer);
-    layer2_draw_pixel(255, 31, 0x03, off_screen_buffer);
-    layer2_draw_pixel(0,   63, 0x03, off_screen_buffer);
-    layer2_draw_pixel(127, 63, 0x03, off_screen_buffer);
-    layer2_draw_pixel(255, 63, 0x03, off_screen_buffer);
+    layer2_draw_pixel(0,   0,  0x03, screen);
+    layer2_draw_pixel(127, 0,  0x03, screen);
+    layer2_draw_pixel(255, 0,  0x03, screen);
+    layer2_draw_pixel(0,   31, 0x03, screen);
+    layer2_draw_pixel(127, 31, 0x03, screen);
+    layer2_draw_pixel(255, 31, 0x03, screen);
+    layer2_draw_pixel(0,   63, 0x03, screen);
+    layer2_draw_pixel(127, 63, 0x03, screen);
+    layer2_draw_pixel(255, 63, 0x03, screen);
 
-    layer2_draw_pixel(0,   64,  0xE0, off_screen_buffer);
-    layer2_draw_pixel(127, 64,  0xE0, off_screen_buffer);
-    layer2_draw_pixel(255, 64,  0xE0, off_screen_buffer);
-    layer2_draw_pixel(0,   95,  0xE0, off_screen_buffer);
-    layer2_draw_pixel(127, 95,  0xE0, off_screen_buffer);
-    layer2_draw_pixel(255, 95,  0xE0, off_screen_buffer);
-    layer2_draw_pixel(0,   127, 0xE0, off_screen_buffer);
-    layer2_draw_pixel(127, 127, 0xE0, off_screen_buffer);
-    layer2_draw_pixel(255, 127, 0xE0, off_screen_buffer);
+    layer2_draw_pixel(0,   64,  0xE0, screen);
+    layer2_draw_pixel(127, 64,  0xE0, screen);
+    layer2_draw_pixel(255, 64,  0xE0, screen);
+    layer2_draw_pixel(0,   95,  0xE0, screen);
+    layer2_draw_pixel(127, 95,  0xE0, screen);
+    layer2_draw_pixel(255, 95,  0xE0, screen);
+    layer2_draw_pixel(0,   127, 0xE0, screen);
+    layer2_draw_pixel(127, 127, 0xE0, screen);
+    layer2_draw_pixel(255, 127, 0xE0, screen);
 
-    layer2_draw_pixel(0,   128, 0x83, off_screen_buffer);
-    layer2_draw_pixel(127, 128, 0x83, off_screen_buffer);
-    layer2_draw_pixel(255, 128, 0x83, off_screen_buffer);
-    layer2_draw_pixel(0,   159, 0x83, off_screen_buffer);
-    layer2_draw_pixel(127, 159, 0x83, off_screen_buffer);
-    layer2_draw_pixel(255, 159, 0x83, off_screen_buffer);
-    layer2_draw_pixel(0,   191, 0x83, off_screen_buffer);
-    layer2_draw_pixel(127, 191, 0x83, off_screen_buffer);
-    layer2_draw_pixel(255, 191, 0x83, off_screen_buffer);
+    layer2_draw_pixel(0,   128, 0x83, screen);
+    layer2_draw_pixel(127, 128, 0x83, screen);
+    layer2_draw_pixel(255, 128, 0x83, screen);
+    layer2_draw_pixel(0,   159, 0x83, screen);
+    layer2_draw_pixel(127, 159, 0x83, screen);
+    layer2_draw_pixel(255, 159, 0x83, screen);
+    layer2_draw_pixel(0,   191, 0x83, screen);
+    layer2_draw_pixel(127, 191, 0x83, screen);
+    layer2_draw_pixel(255, 191, 0x83, screen);
 
     // Outside screen.
-    layer2_draw_pixel(255, 255, 0x83, off_screen_buffer);
+    layer2_draw_pixel(255, 255, 0x83, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -387,26 +389,26 @@ static void test_draw_pixel_many(void)
     }
 }
 
-static void test_draw_line(off_screen_buffer_t *off_screen_buffer)
+static void test_draw_line(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_draw_line(0,   0,   255, 0,   0x6F, off_screen_buffer);
-    layer2_draw_line(0,   191, 255, 191, 0x6F, off_screen_buffer);
-    layer2_draw_line(0,   0,   0,   191, 0x6F, off_screen_buffer);
-    layer2_draw_line(255, 0,   255, 191, 0x6F, off_screen_buffer);
+    layer2_draw_line(0,   0,   255, 0,   0x6F, screen);
+    layer2_draw_line(0,   191, 255, 191, 0x6F, screen);
+    layer2_draw_line(0,   0,   0,   191, 0x6F, screen);
+    layer2_draw_line(255, 0,   255, 191, 0x6F, screen);
 
-    layer2_draw_line(0,   0, 255, 191, 0xE0, off_screen_buffer);
-    layer2_draw_line(255, 0, 0,   191, 0xE0, off_screen_buffer);
+    layer2_draw_line(0,   0, 255, 191, 0xE0, screen);
+    layer2_draw_line(255, 0, 0,   191, 0xE0, screen);
 
     // Outside screen.
-    layer2_draw_line(127, 0, 255, 255, 0xE0, off_screen_buffer);
+    layer2_draw_line(127, 0, 255, 255, 0xE0, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -420,32 +422,32 @@ static void test_draw_line_many(void)
     }
 }
 
-static void test_draw_rect(off_screen_buffer_t *off_screen_buffer)
+static void test_draw_rect(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_draw_rect(0, 0, 256, 192, 0x6F, off_screen_buffer);
+    layer2_draw_rect(0, 0, 256, 192, 0x6F, screen);
 
-    layer2_draw_rect(118, 22,  20, 20, 0xE0, off_screen_buffer);
-    layer2_draw_rect(118, 54,  20, 20, 0xE0, off_screen_buffer);
-    layer2_draw_rect(118, 86,  20, 20, 0xE0, off_screen_buffer);
-    layer2_draw_rect(118, 118, 20, 20, 0xE0, off_screen_buffer);
-    layer2_draw_rect(118, 150, 20, 20, 0xE0, off_screen_buffer);
-    layer2_draw_rect(118, 182, 20, 20, 0xE0, off_screen_buffer);
+    layer2_draw_rect(118, 22,  20, 20, 0xE0, screen);
+    layer2_draw_rect(118, 54,  20, 20, 0xE0, screen);
+    layer2_draw_rect(118, 86,  20, 20, 0xE0, screen);
+    layer2_draw_rect(118, 118, 20, 20, 0xE0, screen);
+    layer2_draw_rect(118, 150, 20, 20, 0xE0, screen);
+    layer2_draw_rect(118, 182, 20, 20, 0xE0, screen);
 
     // Clipped rectangles.
-    layer2_draw_rect(246, 54,  20, 20, 0xEF, off_screen_buffer);
-    layer2_draw_rect(246, 118, 20, 20, 0xEF, off_screen_buffer);
-    layer2_draw_rect(246, 182, 20, 20, 0xEF, off_screen_buffer);
+    layer2_draw_rect(246, 54,  20, 20, 0xEF, screen);
+    layer2_draw_rect(246, 118, 20, 20, 0xEF, screen);
+    layer2_draw_rect(246, 182, 20, 20, 0xEF, screen);
 
     // Outside screen.
-    layer2_draw_rect(246, 246, 20, 20, 0xEF, off_screen_buffer);
+    layer2_draw_rect(246, 246, 20, 20, 0xEF, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -459,30 +461,30 @@ static void test_draw_rect_many(void)
     }
 }
 
-static void test_fill_rect(off_screen_buffer_t *off_screen_buffer)
+static void test_fill_rect(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_fill_rect(118, 22,  20, 20, 0xE0, off_screen_buffer);
-    layer2_fill_rect(118, 54,  20, 20, 0xE0, off_screen_buffer);
-    layer2_fill_rect(118, 86,  20, 20, 0xE0, off_screen_buffer);
-    layer2_fill_rect(118, 118, 20, 20, 0xE0, off_screen_buffer);
-    layer2_fill_rect(118, 150, 20, 20, 0xE0, off_screen_buffer);
-    layer2_fill_rect(118, 182, 20, 20, 0xE0, off_screen_buffer);
+    layer2_fill_rect(118, 22,  20, 20, 0xE0, screen);
+    layer2_fill_rect(118, 54,  20, 20, 0xE0, screen);
+    layer2_fill_rect(118, 86,  20, 20, 0xE0, screen);
+    layer2_fill_rect(118, 118, 20, 20, 0xE0, screen);
+    layer2_fill_rect(118, 150, 20, 20, 0xE0, screen);
+    layer2_fill_rect(118, 182, 20, 20, 0xE0, screen);
 
     // Clipped rectangles.
-    layer2_fill_rect(246, 54,  20, 20, 0xEF, off_screen_buffer);
-    layer2_fill_rect(246, 118, 20, 20, 0xEF, off_screen_buffer);
-    layer2_fill_rect(246, 182, 20, 20, 0xEF, off_screen_buffer);
+    layer2_fill_rect(246, 54,  20, 20, 0xEF, screen);
+    layer2_fill_rect(246, 118, 20, 20, 0xEF, screen);
+    layer2_fill_rect(246, 182, 20, 20, 0xEF, screen);
 
     // Outside screen.
-    layer2_fill_rect(246, 246, 20, 20, 0xEF, off_screen_buffer);
+    layer2_fill_rect(246, 246, 20, 20, 0xEF, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -496,29 +498,29 @@ static void test_fill_rect_many(void)
     }
 }
 
-static void test_draw_text(off_screen_buffer_t *off_screen_buffer)
+static void test_draw_text(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_draw_text(3,  12, "Hello", 0x00, off_screen_buffer);
+    layer2_draw_text(3,  12, "Hello", 0x00, screen);
     layer2_set_font(NULL);
-    layer2_draw_text(11, 12, "Hello", 0x00, off_screen_buffer);
+    layer2_draw_text(11, 12, "Hello", 0x00, screen);
     layer2_set_font((void *) 0x3D00);
-    layer2_draw_text(19, 12, "Hello", 0x00, off_screen_buffer);
+    layer2_draw_text(19, 12, "Hello", 0x00, screen);
 
     // Clipped text.
-    layer2_draw_text(3,  29, "Hello", 0xEF, off_screen_buffer);
-    layer2_draw_text(11, 29, "Hello", 0xEF, off_screen_buffer);
-    layer2_draw_text(19, 29, "Hello", 0xEF, off_screen_buffer);
+    layer2_draw_text(3,  29, "Hello", 0xEF, screen);
+    layer2_draw_text(11, 29, "Hello", 0xEF, screen);
+    layer2_draw_text(19, 29, "Hello", 0xEF, screen);
 
     // Outside screen.
-    layer2_draw_text(24, 32, "Hello", 0xEF, off_screen_buffer);
+    layer2_draw_text(24, 32, "Hello", 0xEF, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -532,32 +534,32 @@ static void test_draw_text_many(void)
     }
 }
 
-static void test_blit(off_screen_buffer_t *off_screen_buffer)
+static void test_blit(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_blit(120, 24,  sprite, 16, 16, off_screen_buffer); // top
-    layer2_blit(120, 56,  sprite, 16, 16, off_screen_buffer); // top + middle
-    layer2_blit(120, 88,  sprite, 16, 16, off_screen_buffer); // middle
-    layer2_blit(120, 120, sprite, 16, 16, off_screen_buffer); // middle + bottom
-    layer2_blit(120, 152, sprite, 16, 16, off_screen_buffer); // bottom
-    layer2_blit(120, 184, sprite, 16, 16, off_screen_buffer); // bottom clipped
+    layer2_blit(120, 24,  sprite, 16, 16, screen); // top
+    layer2_blit(120, 56,  sprite, 16, 16, screen); // top + middle
+    layer2_blit(120, 88,  sprite, 16, 16, screen); // middle
+    layer2_blit(120, 120, sprite, 16, 16, screen); // middle + bottom
+    layer2_blit(120, 152, sprite, 16, 16, screen); // bottom
+    layer2_blit(120, 184, sprite, 16, 16, screen); // bottom clipped
 
-    layer2_blit(64, 48, tall_sprite, 2, 96, off_screen_buffer); // top + middle + bottom
+    layer2_blit(64, 48, tall_sprite, 2, 96, screen); // top + middle + bottom
 
     // Clipped blits.
-    layer2_blit(248, 56,  sprite, 16, 16, off_screen_buffer);
-    layer2_blit(248, 120, sprite, 16, 16, off_screen_buffer);
-    layer2_blit(248, 184, sprite, 16, 16, off_screen_buffer);
+    layer2_blit(248, 56,  sprite, 16, 16, screen);
+    layer2_blit(248, 120, sprite, 16, 16, screen);
+    layer2_blit(248, 184, sprite, 16, 16, screen);
 
     // Outside screen.
-    layer2_blit(248, 248, sprite, 16, 16, off_screen_buffer);
+    layer2_blit(248, 248, sprite, 16, 16, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -571,32 +573,32 @@ static void test_blit_many(void)
     }
 }
 
-static void test_blit_transparent(off_screen_buffer_t *off_screen_buffer)
+static void test_blit_transparent(layer2_screen_t *screen)
 {
-    layer2_fill_rect(0, 0,   256, 64, 0xFE, off_screen_buffer);
-    layer2_fill_rect(0, 64,  256, 64, 0x7E, off_screen_buffer);
-    layer2_fill_rect(0, 128, 256, 64, 0x9F, off_screen_buffer);
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, screen);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, screen);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, screen);
 
-    layer2_blit_transparent(120, 24,  sprite, 16, 16, off_screen_buffer); // top
-    layer2_blit_transparent(120, 56,  sprite, 16, 16, off_screen_buffer); // top + middle
-    layer2_blit_transparent(120, 88,  sprite, 16, 16, off_screen_buffer); // middle
-    layer2_blit_transparent(120, 120, sprite, 16, 16, off_screen_buffer); // middle + bottom
-    layer2_blit_transparent(120, 152, sprite, 16, 16, off_screen_buffer); // bottom
-    layer2_blit_transparent(120, 184, sprite, 16, 16, off_screen_buffer); // bottom clipped
+    layer2_blit_transparent(120, 24,  sprite, 16, 16, screen); // top
+    layer2_blit_transparent(120, 56,  sprite, 16, 16, screen); // top + middle
+    layer2_blit_transparent(120, 88,  sprite, 16, 16, screen); // middle
+    layer2_blit_transparent(120, 120, sprite, 16, 16, screen); // middle + bottom
+    layer2_blit_transparent(120, 152, sprite, 16, 16, screen); // bottom
+    layer2_blit_transparent(120, 184, sprite, 16, 16, screen); // bottom clipped
 
-    layer2_blit_transparent(64, 48, tall_sprite, 2, 96, off_screen_buffer); // top + middle + bottom
+    layer2_blit_transparent(64, 48, tall_sprite, 2, 96, screen); // top + middle + bottom
 
     // Clipped blits.
-    layer2_blit_transparent(248, 56,  sprite, 16, 16, off_screen_buffer);
-    layer2_blit_transparent(248, 120, sprite, 16, 16, off_screen_buffer);
-    layer2_blit_transparent(248, 184, sprite, 16, 16, off_screen_buffer);
+    layer2_blit_transparent(248, 56,  sprite, 16, 16, screen);
+    layer2_blit_transparent(248, 120, sprite, 16, 16, screen);
+    layer2_blit_transparent(248, 184, sprite, 16, 16, screen);
 
     // Outside screen.
-    layer2_blit_transparent(248, 248, sprite, 16, 16, off_screen_buffer);
+    layer2_blit_transparent(248, 248, sprite, 16, 16, screen);
 
-    if (off_screen_buffer != NULL)
+    if (IS_OFF_SCREEN(screen))
     {
-        layer2_copy_off_screen(off_screen_buffer);
+        layer2_copy_off_screen(screen);
     }
 }
 
@@ -728,31 +730,31 @@ static void test_scroll_screen_diagonally(void)
 /*
  * Scroll horizontally between three screens numbered 0, 1 and 2 with the file
  * names wide1.nxi, wide2.nxi and wide3.nxi. The first screen file is loaded
- * into the layer 2 screen. The screen file to be scrolled in is loaded into an
- * off-screen buffer. When the screen being scrolled in is completely scrolled
- * in, the next screen file to be scrolled in is loaded into the off-screen
- * buffer. When the last screen is completely scrolled in, the scroll direction
- * is reversed. The actual scrolling is performed in the vertical blanking
- * interval and is done by shifting the columns of the screen by one pixel and
- * blitting the corresponding column from the off-screen buffer of the screen
- * being scrolled in.
+ * into the main layer 2 screen. The screen file to be scrolled in is loaded
+ * into an off-screen buffer. When the screen being scrolled in is completely
+ * scrolled in, the next screen file to be scrolled in is loaded into the off-
+ * screen buffer. When the last screen is completely scrolled in, the scroll
+ * direction is reversed. The actual scrolling is performed in the vertical
+ * blanking interval and is done by shifting the columns of the main screen by
+ * one pixel and blitting the corresponding column from the off-screen buffer of
+ * the screen being scrolled in.
  */
 static void test_scroll_multi_screen_horizontally(void)
 {
-    static const char *screen[3] = {"wide1.nxi", "wide2.nxi", "wide3.nxi"};
-    uint8_t next_screen = 0;
+    static const char *screen_files[3] = {"wide1.nxi", "wide2.nxi", "wide3.nxi"};
+    uint8_t next_screen_num = 0;
     uint8_t offset_x = 0;
     uint8_t fill_x;
     bool increment = true;
 
-    layer2_load_screen(screen[next_screen], NULL);
+    layer2_load_screen(screen_files[next_screen_num], NULL);
 
     while (!in_inkey())
     {
         if (offset_x == 0)
         {
-            next_screen = increment ? next_screen + 1 : next_screen - 1;
-            layer2_load_screen(screen[next_screen], &off_screen_buffer);
+            next_screen_num = increment ? next_screen_num + 1 : next_screen_num - 1;
+            layer2_load_screen(screen_files[next_screen_num], &off_screen);
         }
 
         intrinsic_halt();
@@ -769,11 +771,11 @@ static void test_scroll_multi_screen_horizontally(void)
         }
 
         layer2_set_offset_x(offset_x);
-        layer2_blit_off_screen_column(fill_x, &off_screen_buffer, fill_x);
+        layer2_blit_off_screen_column(fill_x, &off_screen, fill_x);
 
         if (offset_x == 0)
         {
-            if ((next_screen == 0) || (next_screen == 2))
+            if ((next_screen_num == 0) || (next_screen_num == 2))
             {
                 increment = !increment;
             }
@@ -786,31 +788,31 @@ static void test_scroll_multi_screen_horizontally(void)
 /*
  * Scroll vertically between three screens numbered 0, 1 and 2 with the file
  * names tall1.nxi, tall2.nxi and tall3.nxi. The first screen file is loaded
- * into the layer 2 screen. The screen file to be scrolled in is loaded into an
- * off-screen buffer. When the screen being scrolled in is completely scrolled
- * in, the next screen file to be scrolled in is loaded into the off-screen
- * buffer. When the last screen is completely scrolled in, the scroll direction
- * is reversed. The actual scrolling is performed in the vertical blanking
- * interval and is done by shifting the rows of the screen by one pixel and
- * blitting the corresponding row from the off-screen buffer of the screen
- * being scrolled in.
+ * into the main layer 2 screen. The screen file to be scrolled in is loaded
+ * into an off-screen buffer. When the screen being scrolled in is completely
+ * scrolled in, the next screen file to be scrolled in is loaded into the off-
+ * screen buffer. When the last screen is completely scrolled in, the scroll
+ * direction is reversed. The actual scrolling is performed in the vertical
+ * blanking interval and is done by shifting the rows of the main screen by one
+ * pixel and blitting the corresponding row from the off-screen buffer of the
+ * screen being scrolled in.
  */
 static void test_scroll_multi_screen_vertically(void)
 {
-    static const char *screen[3] = {"tall1.nxi", "tall2.nxi", "tall3.nxi"};
-    uint8_t next_screen = 0;
+    static const char *screen_files[3] = {"tall1.nxi", "tall2.nxi", "tall3.nxi"};
+    uint8_t next_screen_num = 0;
     uint8_t offset_y = 0;
     uint8_t fill_y;
     bool increment = true;
 
-    layer2_load_screen(screen[next_screen], NULL);
+    layer2_load_screen(screen_files[next_screen_num], NULL);
 
     while (!in_inkey())
     {
         if (offset_y == 0)
         {
-            next_screen = increment ? next_screen + 1 : next_screen - 1;
-            layer2_load_screen(screen[next_screen], &off_screen_buffer);
+            next_screen_num = increment ? next_screen_num + 1 : next_screen_num - 1;
+            layer2_load_screen(screen_files[next_screen_num], &off_screen);
         }
 
         intrinsic_halt();
@@ -827,11 +829,11 @@ static void test_scroll_multi_screen_vertically(void)
         }
 
         layer2_set_offset_y(offset_y);
-        layer2_blit_off_screen_row(fill_y, &off_screen_buffer, fill_y);
+        layer2_blit_off_screen_row(fill_y, &off_screen, fill_y);
 
         if (offset_y == 0)
         {
-            if ((next_screen == 0) || (next_screen == 2))
+            if ((next_screen_num == 0) || (next_screen_num == 2))
             {
                 increment = !increment;
             }
