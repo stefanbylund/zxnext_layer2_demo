@@ -993,8 +993,8 @@ static void test_ula_over_layer2(void)
 
 /*
  * This function demonstrates that it is possible to page the main layer 2
- * screen to the top 16K instead of the bottom 16K and still have any drawing
- * results directly displayed.
+ * screen to the top 16K RAM instead of the bottom 16K and still have any
+ * drawing results directly displayed.
  */
 static void test_main_screen_in_top_16k(void)
 {
@@ -1012,9 +1012,9 @@ static void test_main_screen_in_top_16k(void)
 
 /*
  * This function demonstrates that it is possible to page the shadow layer 2
- * screen (or any layer 2 off-screen buffer stored in consecutive RAM banks) to
- * the top 16K instead of the bottom 16K. We have to flip the main and shadow
- * screens to display the results of the drawing.
+ * screen (or any layer 2 off-screen buffer stored in consecutive RAM banks)
+ * to the top 16K RAM instead of the bottom 16K. We have to flip the main and
+ * shadow screens to display the results of the drawing.
  */
 static void test_shadow_screen_in_top_16k(void)
 {
