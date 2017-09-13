@@ -27,8 +27,6 @@
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
 
-#define IS_OFF_SCREEN(screen) (((screen) != NULL) && ((screen)->screen_type == OFF_SCREEN))
-
 #define printAt(row, col, str) printf("\x16%c%c%s", (row), (col), (str))
 
 /*******************************************************************************
@@ -44,6 +42,8 @@ static void create_start_screen(void);
 static void init_tests(void);
 
 static void select_test(void);
+
+static void flip_main_shadow_screen(void);
 
 static void test_clear_screen(layer2_screen_t *screen);
 
@@ -100,6 +100,8 @@ static void test_ula_over_layer2(void);
  ******************************************************************************/
 
 static uint8_t test_number = 0;
+
+static layer2_screen_t shadow_screen = {SHADOW_SCREEN};
 
 static layer2_screen_t off_screen = {OFF_SCREEN, 0, 1, 3};
 
@@ -212,92 +214,141 @@ static void select_test(void)
             test_blit_transparent(NULL);
             break;
         case 9:
-            test_clear_screen(&off_screen);
+            test_clear_screen(&shadow_screen);
             break;
         case 10:
-            test_load_screen(&off_screen);
+            test_load_screen(&shadow_screen);
             break;
         case 11:
-            test_draw_pixel(&off_screen);
+            test_draw_pixel(&shadow_screen);
             break;
         case 12:
-            test_draw_line(&off_screen);
+            test_draw_line(&shadow_screen);
             break;
         case 13:
-            test_draw_rect(&off_screen);
+            test_draw_rect(&shadow_screen);
             break;
         case 14:
-            test_fill_rect(&off_screen);
+            test_fill_rect(&shadow_screen);
             break;
         case 15:
-            test_draw_text(&off_screen);
+            test_draw_text(&shadow_screen);
             break;
         case 16:
-            test_blit(&off_screen);
+            test_blit(&shadow_screen);
             break;
         case 17:
-            test_blit_transparent(&off_screen);
+            test_blit_transparent(&shadow_screen);
             break;
         case 18:
-            test_clear_screen_many();
+            test_clear_screen(&off_screen);
             break;
         case 19:
-            test_load_screen_many();
+            test_load_screen(&off_screen);
             break;
         case 20:
-            test_draw_pixel_many();
+            test_draw_pixel(&off_screen);
             break;
         case 21:
-            test_draw_line_many();
+            test_draw_line(&off_screen);
             break;
         case 22:
-            test_draw_rect_many();
+            test_draw_rect(&off_screen);
             break;
         case 23:
-            test_fill_rect_many();
+            test_fill_rect(&off_screen);
             break;
         case 24:
-            test_draw_text_many();
+            test_draw_text(&off_screen);
             break;
         case 25:
-            test_blit_many();
+            test_blit(&off_screen);
             break;
         case 26:
-            test_blit_transparent_many();
+            test_blit_transparent(&off_screen);
             break;
         case 27:
-            test_scroll_screen_horizontally();
+            test_clear_screen_many();
             break;
         case 28:
-            test_scroll_screen_vertically();
+            test_load_screen_many();
             break;
         case 29:
-            test_scroll_screen_diagonally();
+            test_draw_pixel_many();
             break;
         case 30:
-            test_scroll_multi_screen_horizontally();
+            test_draw_line_many();
             break;
         case 31:
-            test_scroll_multi_screen_vertically();
+            test_draw_rect_many();
             break;
         case 32:
-            test_layer2_over_ula();
+            test_fill_rect_many();
             break;
         case 33:
+            test_draw_text_many();
+            break;
+        case 34:
+            test_blit_many();
+            break;
+        case 35:
+            test_blit_transparent_many();
+            break;
+        case 36:
+            test_scroll_screen_horizontally();
+            break;
+        case 37:
+            test_scroll_screen_vertically();
+            break;
+        case 38:
+            test_scroll_screen_diagonally();
+            break;
+        case 39:
+            test_scroll_multi_screen_horizontally();
+            break;
+        case 40:
+            test_scroll_multi_screen_vertically();
+            break;
+        case 41:
+            test_layer2_over_ula();
+            break;
+        case 42:
             test_ula_over_layer2();
             break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 34;
+    test_number = (test_number + 1) % 43;
+}
+
+static void flip_main_shadow_screen(void)
+{
+    static bool flip = false;
+
+    if (flip)
+    {
+        layer2_set_main_screen_ram_bank(8);
+        layer2_set_shadow_screen_ram_bank(11);
+    }
+    else
+    {
+        layer2_set_main_screen_ram_bank(11);
+        layer2_set_shadow_screen_ram_bank(8);
+    }
+
+    flip = !flip;
 }
 
 static void test_clear_screen(layer2_screen_t *screen)
 {
     layer2_clear_screen(0xDB, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -315,7 +366,11 @@ static void test_load_screen(layer2_screen_t *screen)
 {
     layer2_load_screen("screen1.nxi", screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -373,7 +428,11 @@ static void test_draw_pixel(layer2_screen_t *screen)
     // Outside screen.
     layer2_draw_pixel(255, 255, 0x83, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -406,7 +465,11 @@ static void test_draw_line(layer2_screen_t *screen)
     // Outside screen.
     layer2_draw_line(127, 0, 255, 255, 0xE0, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -445,7 +508,11 @@ static void test_draw_rect(layer2_screen_t *screen)
     // Outside screen.
     layer2_draw_rect(246, 246, 20, 20, 0xEF, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -482,7 +549,11 @@ static void test_fill_rect(layer2_screen_t *screen)
     // Outside screen.
     layer2_fill_rect(246, 246, 20, 20, 0xEF, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -518,7 +589,11 @@ static void test_draw_text(layer2_screen_t *screen)
     // Outside screen.
     layer2_draw_text(24, 32, "Hello", 0xEF, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -557,7 +632,11 @@ static void test_blit(layer2_screen_t *screen)
     // Outside screen.
     layer2_blit(248, 248, sprite, 16, 16, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
@@ -596,7 +675,11 @@ static void test_blit_transparent(layer2_screen_t *screen)
     // Outside screen.
     layer2_blit_transparent(248, 248, sprite, 16, 16, screen);
 
-    if (IS_OFF_SCREEN(screen))
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
     {
         layer2_copy_off_screen(screen);
     }
