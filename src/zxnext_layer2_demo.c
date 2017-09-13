@@ -45,6 +45,8 @@ static void select_test(void);
 
 static void flip_main_shadow_screen(void);
 
+static void reset_main_shadow_screen(void);
+
 static void test_clear_screen(layer2_screen_t *screen);
 
 static void test_clear_screen_many(void);
@@ -95,6 +97,10 @@ static void test_layer2_over_ula(void);
 
 static void test_ula_over_layer2(void);
 
+static void test_main_screen_in_top_16k(void);
+
+static void test_shadow_screen_in_top_16k(void);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -104,6 +110,8 @@ static uint8_t test_number = 0;
 static layer2_screen_t shadow_screen = {SHADOW_SCREEN};
 
 static layer2_screen_t off_screen = {OFF_SCREEN, 0, 1, 3};
+
+static bool flip_to_8_11 = false;
 
 static uint8_t tall_sprite[192];
 
@@ -315,18 +323,22 @@ static void select_test(void)
         case 42:
             test_ula_over_layer2();
             break;
+        case 43:
+            test_main_screen_in_top_16k();
+            break;
+        case 44:
+            test_shadow_screen_in_top_16k();
+            break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 43;
+    test_number = (test_number + 1) % 45;
 }
 
 static void flip_main_shadow_screen(void)
 {
-    static bool flip = false;
-
-    if (flip)
+    if (flip_to_8_11)
     {
         layer2_set_main_screen_ram_bank(8);
         layer2_set_shadow_screen_ram_bank(11);
@@ -337,7 +349,14 @@ static void flip_main_shadow_screen(void)
         layer2_set_shadow_screen_ram_bank(8);
     }
 
-    flip = !flip;
+    flip_to_8_11 = !flip_to_8_11;
+}
+
+static void reset_main_shadow_screen(void)
+{
+    layer2_set_main_screen_ram_bank(8);
+    layer2_set_shadow_screen_ram_bank(11);
+    flip_to_8_11 = false;
 }
 
 static void test_clear_screen(layer2_screen_t *screen)
@@ -970,6 +989,47 @@ static void test_ula_over_layer2(void)
     zx_cls(INK_BLACK | PAPER_WHITE);
     layer2_set_layer_priorities(LAYER_PRIORITIES_S_L_U);
     layer2_set_global_transparency_color(0xE3);
+}
+
+/*
+ * This function demonstrates that it is possible to page the main layer 2
+ * screen to the top 16K instead of the bottom 16K and still have any drawing
+ * results directly displayed.
+ */
+static void test_main_screen_in_top_16k(void)
+{
+    layer2_screen_t main_screen_buffer = {OFF_SCREEN, 8, 9, 10};
+
+    reset_main_shadow_screen();
+
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, main_screen_buffer);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, main_screen_buffer);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, main_screen_buffer);
+
+    layer2_draw_rect(24, 32, 208, 128, 0x6F, main_screen_buffer);
+    layer2_draw_text(12, 5, "Main screen in top 16K", 0x00, main_screen_buffer);
+}
+
+/*
+ * This function demonstrates that it is possible to page the shadow layer 2
+ * screen (or any layer 2 off-screen buffer stored in consecutive RAM banks) to
+ * the top 16K instead of the bottom 16K. We have to flip the main and shadow
+ * screens to display the results of the drawing.
+ */
+static void test_shadow_screen_in_top_16k(void)
+{
+    layer2_screen_t shadow_screen_buffer = {OFF_SCREEN, 11, 12, 13};
+
+    reset_main_shadow_screen();
+
+    layer2_fill_rect(0, 0,   256, 64, 0xFE, shadow_screen_buffer);
+    layer2_fill_rect(0, 64,  256, 64, 0x7E, shadow_screen_buffer);
+    layer2_fill_rect(0, 128, 256, 64, 0x9F, shadow_screen_buffer);
+
+    layer2_draw_rect(24, 32, 208, 128, 0x6F, shadow_screen_buffer);
+    layer2_draw_text(12, 4, "Shadow screen in top 16K", 0x00, shadow_screen_buffer);
+
+    flip_main_shadow_screen();
 }
 
 int main(void)
