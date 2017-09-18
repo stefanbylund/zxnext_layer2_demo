@@ -92,7 +92,7 @@ mode, start it with the following options:
 mode, start it with the options below. Note that the -mmc path must end with a
 / or \ character!
 
-> CSpect -zxnext -s7 -mmc=\<zxnext_layer2_demo_folder\>/resources/ zxnext_layer2_demo.sna
+> CSpect -zxnext -mmc=\<zxnext_layer2_demo_folder\>/resources/ zxnext_layer2_demo.sna
 
 ## License
 
