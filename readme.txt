@@ -2,9 +2,9 @@ Demonstration of zxnext_layer2
 ==============================
 
 The zxnext_layer2_demo is an example program demonstrating how to use the
-zxnext_layer2 (https://github.com/stefanbylund/zxnext_layer2) C API for the
-layer 2 screen of the Sinclair ZX Spectrum Next. This program is also used for
-regression testing of the zxnext_layer2 project.
+zxnext_layer2 (https://github.com/stefanbylund/zxnext_layer2) C layer 2
+graphics library for the Sinclair ZX Spectrum Next. This program is also
+used for regression testing of the zxnext_layer2 project.
 
 The program consists of 45 different screens. Switch between the screens by
 pressing any key. The first set of screens tests all drawing functions using the
