@@ -1,3 +1,1 @@
 * Switch to zxn target in z88dk when stable.
-
-* Add test for multi-screen diagonal scrolling.

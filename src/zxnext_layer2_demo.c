@@ -93,6 +93,8 @@ static void test_scroll_multi_screen_horizontally(void);
 
 static void test_scroll_multi_screen_vertically(void);
 
+static void test_scroll_multi_screen_diagonally(void);
+
 static void test_layer2_over_ula(void);
 
 static void test_ula_over_layer2(void);
@@ -318,22 +320,25 @@ static void select_test(void)
             test_scroll_multi_screen_vertically();
             break;
         case 41:
-            test_layer2_over_ula();
+            test_scroll_multi_screen_diagonally();
             break;
         case 42:
-            test_ula_over_layer2();
+            test_layer2_over_ula();
             break;
         case 43:
-            test_main_screen_in_top_16k();
+            test_ula_over_layer2();
             break;
         case 44:
+            test_main_screen_in_top_16k();
+            break;
+        case 45:
             test_shadow_screen_in_top_16k();
             break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 45;
+    test_number = (test_number + 1) % 46;
 }
 
 static void flip_main_shadow_screen(void)
@@ -942,6 +947,132 @@ static void test_scroll_multi_screen_vertically(void)
         }
     }
 
+    layer2_set_offset_y(0);
+}
+
+/*
+ * Scroll diagonally between four screens numbered 0, 1, 2 and 3 with the file
+ * names diag1.nxi, diag2.nxi, diag3.nxi and diag4.nxi. The first screen file is
+ * loaded into the main layer 2 screen. The screen files to be scrolled in in
+ * the X direction, Y direction and the X-Y corner screen between them are
+ * loaded into three off-screen buffers. When the border between the main screen
+ * and one of the off-screen buffers is about to be crossed, the next screen
+ * files to be scrolled in are loaded into the off-screen buffers. When the last
+ * screen in the X or Y direction is completely scrolled in, that scroll
+ * direction is reversed. The actual scrolling is performed in the vertical
+ * blanking interval and is done by shifting the rows and columns of the main
+ * screen by one pixel and blitting the corresponding row and column from the
+ * off-screen buffers of the three screens being scrolled in. One part of the
+ * new row is blitted from the next screen in the Y direction and the other part
+ * from the X-Y corner screen. One part of the new column is blitted from the
+ * next screen in the X direction and the other part from the X-Y corner screen.
+ */
+static void test_scroll_multi_screen_diagonally(void)
+{
+    static const char *screen_x[4] = {"diag3.nxi", "diag4.nxi", "diag1.nxi", "diag2.nxi"};
+    static const char *screen_y[4] = {"diag2.nxi", "diag1.nxi", "diag4.nxi", "diag3.nxi"};
+    static const char *screen_xy[4] = {"diag1.nxi", "diag2.nxi", "diag3.nxi", "diag4.nxi"};
+    layer2_screen_t off_screen_buffer_x = {OFF_SCREEN, 0, 1, 3};
+    layer2_screen_t off_screen_buffer_y = {OFF_SCREEN, 4, 6, 7};
+    layer2_screen_t off_screen_buffer_xy = {OFF_SCREEN, 14, 15, 16};
+    uint8_t next_screen_x = 0;
+    uint8_t next_screen_y = 0;
+    uint8_t offset_x = 0;
+    uint8_t offset_y = 0;
+    uint8_t fill_x;
+    uint8_t fill_y;
+    bool increment_x = true;
+    bool increment_y = true;
+
+    layer2_load_screen("diag1.nxi", NULL);
+
+    while (!in_inkey())
+    {
+        if (offset_x == 0)
+        {
+            next_screen_x = increment_x ? next_screen_x + 1 : next_screen_x - 1;
+        }
+
+        if (offset_y == 0)
+        {
+            next_screen_y = increment_y ? next_screen_y + 1 : next_screen_y - 1;
+        }
+
+        if ((offset_x == 0) || (offset_y == 0))
+        {
+            uint8_t i = next_screen_x + (next_screen_y << 1);
+            layer2_load_screen(screen_x[i], &off_screen_buffer_x);
+            layer2_load_screen(screen_y[i], &off_screen_buffer_y);
+            layer2_load_screen(screen_xy[i], &off_screen_buffer_xy);
+        }
+
+        intrinsic_halt();
+
+        if (increment_x)
+        {
+            fill_x = offset_x;
+            offset_x++;
+        }
+        else
+        {
+            offset_x--;
+            fill_x = offset_x;
+        }
+
+        if (increment_y)
+        {
+            fill_y = offset_y;
+            offset_y = INC_Y(offset_y);
+        }
+        else
+        {
+            offset_y = DEC_Y(offset_y);
+            fill_y = offset_y;
+        }
+
+        layer2_set_offset_x(offset_x);
+        layer2_set_offset_y(offset_y);
+
+        // Blit row
+        if (increment_x)
+        {
+            // Adjust the row width to 256 if offset_x is wrapping from 255 to 0.
+            uint16_t row_width = ((fill_x == 255) ? 256 : offset_x);
+            layer2_blit_off_screen_sub_row(offset_x, fill_y, &off_screen_buffer_y,  offset_x, fill_y, 256 - row_width);
+            layer2_blit_off_screen_sub_row(0,        fill_y, &off_screen_buffer_xy, 0,        fill_y, row_width);
+        }
+        else
+        {
+            layer2_blit_off_screen_sub_row(0,        fill_y, &off_screen_buffer_y,  0,        fill_y, offset_x);
+            layer2_blit_off_screen_sub_row(offset_x, fill_y, &off_screen_buffer_xy, offset_x, fill_y, 256 - offset_x);
+        }
+
+        // Blit column
+        if (increment_y)
+        {
+            // Adjust the column height to 192 if offset_y is wrapping from 191 to 0.
+            uint8_t column_height = ((fill_y == 191) ? 192 : offset_y);
+            layer2_blit_off_screen_sub_column(fill_x, offset_y, &off_screen_buffer_x,  fill_x, offset_y, 192 - column_height);
+            layer2_blit_off_screen_sub_column(fill_x, 0,        &off_screen_buffer_xy, fill_x, 0,        column_height);
+        }
+        else
+        {
+            layer2_blit_off_screen_sub_column(fill_x, 0,        &off_screen_buffer_x,  fill_x, 0,        offset_y);
+            layer2_blit_off_screen_sub_column(fill_x, offset_y, &off_screen_buffer_xy, fill_x, offset_y, 192 - offset_y);
+        }
+
+        if (offset_x == 0)
+        {
+            increment_x = !increment_x;
+        }
+
+        if (offset_y == 0)
+        {
+            increment_y = !increment_y;
+        }
+    }
+
+    layer2_set_offset_x(0);
     layer2_set_offset_y(0);
 }
 
