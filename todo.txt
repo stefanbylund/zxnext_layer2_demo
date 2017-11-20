@@ -1,1 +1,3 @@
 * Switch to zxn target in z88dk when stable.
+
+* Split demo program into several programs since it grown too big for SCCZ80.

@@ -5,7 +5,7 @@ how to use the [zxnext_layer2](https://github.com/stefanbylund/zxnext_layer2)
 C layer 2 graphics library for the Sinclair ZX Spectrum Next. This program is
 also used for regression testing of the zxnext_layer2 project.
 
-The program consists of 46 different screens. Switch between the screens by
+The program consists of 49 different screens. Switch between the screens by
 pressing any key. The first set of screens tests all drawing functions using the
 main layer 2 screen. The second set of screens are the same as the first set but
 all drawing is done on the shadow layer 2 screen. The third set of screens are

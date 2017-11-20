@@ -53,6 +53,8 @@ static void test_clear_screen_many(void);
 
 static void test_load_screen(layer2_screen_t *screen);
 
+static void test_load_screen_with_palette(layer2_screen_t *screen);
+
 static void test_load_screen_many(void);
 
 static void test_draw_pixel(layer2_screen_t *screen);
@@ -203,142 +205,151 @@ static void select_test(void)
             test_load_screen(NULL);
             break;
         case 2:
-            test_draw_pixel(NULL);
+            test_load_screen_with_palette(NULL);
             break;
         case 3:
-            test_draw_line(NULL);
+            test_draw_pixel(NULL);
             break;
         case 4:
-            test_draw_rect(NULL);
+            test_draw_line(NULL);
             break;
         case 5:
-            test_fill_rect(NULL);
+            test_draw_rect(NULL);
             break;
         case 6:
-            test_draw_text(NULL);
+            test_fill_rect(NULL);
             break;
         case 7:
-            test_blit(NULL);
+            test_draw_text(NULL);
             break;
         case 8:
-            test_blit_transparent(NULL);
+            test_blit(NULL);
             break;
         case 9:
-            test_clear_screen(&shadow_screen);
+            test_blit_transparent(NULL);
             break;
         case 10:
-            test_load_screen(&shadow_screen);
+            test_clear_screen(&shadow_screen);
             break;
         case 11:
-            test_draw_pixel(&shadow_screen);
+            test_load_screen(&shadow_screen);
             break;
         case 12:
-            test_draw_line(&shadow_screen);
+            test_load_screen_with_palette(&shadow_screen);
             break;
         case 13:
-            test_draw_rect(&shadow_screen);
+            test_draw_pixel(&shadow_screen);
             break;
         case 14:
-            test_fill_rect(&shadow_screen);
+            test_draw_line(&shadow_screen);
             break;
         case 15:
-            test_draw_text(&shadow_screen);
+            test_draw_rect(&shadow_screen);
             break;
         case 16:
-            test_blit(&shadow_screen);
+            test_fill_rect(&shadow_screen);
             break;
         case 17:
-            test_blit_transparent(&shadow_screen);
+            test_draw_text(&shadow_screen);
             break;
         case 18:
-            test_clear_screen(&off_screen);
+            test_blit(&shadow_screen);
             break;
         case 19:
-            test_load_screen(&off_screen);
+            test_blit_transparent(&shadow_screen);
             break;
         case 20:
-            test_draw_pixel(&off_screen);
+            test_clear_screen(&off_screen);
             break;
         case 21:
-            test_draw_line(&off_screen);
+            test_load_screen(&off_screen);
             break;
         case 22:
-            test_draw_rect(&off_screen);
+            test_load_screen_with_palette(&off_screen);
             break;
         case 23:
-            test_fill_rect(&off_screen);
+            test_draw_pixel(&off_screen);
             break;
         case 24:
-            test_draw_text(&off_screen);
+            test_draw_line(&off_screen);
             break;
         case 25:
-            test_blit(&off_screen);
+            test_draw_rect(&off_screen);
             break;
         case 26:
-            test_blit_transparent(&off_screen);
+            test_fill_rect(&off_screen);
             break;
         case 27:
-            test_clear_screen_many();
+            test_draw_text(&off_screen);
             break;
         case 28:
-            test_load_screen_many();
+            test_blit(&off_screen);
             break;
         case 29:
-            test_draw_pixel_many();
+            test_blit_transparent(&off_screen);
             break;
         case 30:
-            test_draw_line_many();
+            test_clear_screen_many();
             break;
         case 31:
-            test_draw_rect_many();
+            test_load_screen_many();
             break;
         case 32:
-            test_fill_rect_many();
+            test_draw_pixel_many();
             break;
         case 33:
-            test_draw_text_many();
+            test_draw_line_many();
             break;
         case 34:
-            test_blit_many();
+            test_draw_rect_many();
             break;
         case 35:
-            test_blit_transparent_many();
+            test_fill_rect_many();
             break;
         case 36:
-            test_scroll_screen_horizontally();
+            test_draw_text_many();
             break;
         case 37:
-            test_scroll_screen_vertically();
+            test_blit_many();
             break;
         case 38:
-            test_scroll_screen_diagonally();
+            test_blit_transparent_many();
             break;
         case 39:
-            test_scroll_multi_screen_horizontally();
+            test_scroll_screen_horizontally();
             break;
         case 40:
-            test_scroll_multi_screen_vertically();
+            test_scroll_screen_vertically();
             break;
         case 41:
-            test_scroll_multi_screen_diagonally();
+            test_scroll_screen_diagonally();
             break;
         case 42:
-            test_layer2_over_ula();
+            test_scroll_multi_screen_horizontally();
             break;
         case 43:
-            test_ula_over_layer2();
+            test_scroll_multi_screen_vertically();
             break;
         case 44:
-            test_main_screen_in_top_16k();
+            test_scroll_multi_screen_diagonally();
             break;
         case 45:
+            test_layer2_over_ula();
+            break;
+        case 46:
+            test_ula_over_layer2();
+            break;
+        case 47:
+            test_main_screen_in_top_16k();
+            break;
+        case 48:
             test_shadow_screen_in_top_16k();
             break;
         default:
             break;
     }
 
-    test_number = (test_number + 1) % 46;
+    test_number = (test_number + 1) % 49;
 }
 
 static void flip_main_shadow_screen(void)
@@ -388,7 +399,7 @@ static void test_clear_screen_many(void)
 
 static void test_load_screen(layer2_screen_t *screen)
 {
-    layer2_load_screen("screen1.nxi", screen);
+    layer2_load_screen("screen1.nxi", screen, false);
 
     if (IS_SHADOW_SCREEN(screen))
     {
@@ -400,13 +411,35 @@ static void test_load_screen(layer2_screen_t *screen)
     }
 }
 
+static void test_load_screen_with_palette(layer2_screen_t *screen)
+{
+    // Load screen with palette using second layer 2 palette.
+    layer2_set_display_palette(false);
+    layer2_set_rw_palette(false);
+    layer2_load_screen("img_pal.nxi", screen, true);
+
+    if (IS_SHADOW_SCREEN(screen))
+    {
+        flip_main_shadow_screen();
+    }
+    else if (IS_OFF_SCREEN(screen))
+    {
+        layer2_copy_off_screen(screen);
+    }
+
+    in_wait_key();
+    // Reset to first layer 2 palette.
+    layer2_set_display_palette(true);
+    layer2_set_rw_palette(true);
+}
+
 static void test_load_screen_many(void)
 {
     bool toggle = true;
 
     while (!in_inkey())
     {
-        layer2_load_screen(toggle ? "screen1.nxi" : "screen2.nxi", NULL);
+        layer2_load_screen(toggle ? "screen1.nxi" : "screen2.nxi", NULL, false);
         toggle = !toggle;
         // A short delay so we have time to actually see the screen.
         z80_delay_ms(500);
@@ -724,7 +757,7 @@ static void test_scroll_screen_horizontally(void)
     uint8_t offset_x = 0;
     bool increment = true;
 
-    layer2_load_screen("screen1.nxi", NULL);
+    layer2_load_screen("screen1.nxi", NULL, false);
 
     // 0, 1, 2, ..., 254, 255, 0, 255, 254, ..., 2, 1, 0, ...
 
@@ -757,7 +790,7 @@ static void test_scroll_screen_vertically(void)
     uint8_t offset_y = 0;
     bool increment = true;
 
-    layer2_load_screen("screen1.nxi", NULL);
+    layer2_load_screen("screen1.nxi", NULL, false);
 
     // 0, 1, 2, ..., 190, 191, 0, 191, 190, ..., 2, 1, 0, ...
 
@@ -792,7 +825,7 @@ static void test_scroll_screen_diagonally(void)
     bool increment_x = true;
     bool increment_y = true;
 
-    layer2_load_screen("screen1.nxi", NULL);
+    layer2_load_screen("screen1.nxi", NULL, false);
 
     while (!in_inkey())
     {
@@ -854,14 +887,14 @@ static void test_scroll_multi_screen_horizontally(void)
     uint8_t fill_x;
     bool increment = true;
 
-    layer2_load_screen(screen_files[next_screen_num], NULL);
+    layer2_load_screen(screen_files[next_screen_num], NULL, false);
 
     while (!in_inkey())
     {
         if (offset_x == 0)
         {
             next_screen_num = increment ? next_screen_num + 1 : next_screen_num - 1;
-            layer2_load_screen(screen_files[next_screen_num], &off_screen);
+            layer2_load_screen(screen_files[next_screen_num], &off_screen, false);
         }
 
         intrinsic_halt();
@@ -912,14 +945,14 @@ static void test_scroll_multi_screen_vertically(void)
     uint8_t fill_y;
     bool increment = true;
 
-    layer2_load_screen(screen_files[next_screen_num], NULL);
+    layer2_load_screen(screen_files[next_screen_num], NULL, false);
 
     while (!in_inkey())
     {
         if (offset_y == 0)
         {
             next_screen_num = increment ? next_screen_num + 1 : next_screen_num - 1;
-            layer2_load_screen(screen_files[next_screen_num], &off_screen);
+            layer2_load_screen(screen_files[next_screen_num], &off_screen, false);
         }
 
         intrinsic_halt();
@@ -984,7 +1017,7 @@ static void test_scroll_multi_screen_diagonally(void)
     bool increment_x = true;
     bool increment_y = true;
 
-    layer2_load_screen("diag1.nxi", NULL);
+    layer2_load_screen("diag1.nxi", NULL, false);
 
     while (!in_inkey())
     {
@@ -1001,9 +1034,9 @@ static void test_scroll_multi_screen_diagonally(void)
         if ((offset_x == 0) || (offset_y == 0))
         {
             uint8_t i = next_screen_x + (next_screen_y << 1);
-            layer2_load_screen(screen_x[i], &off_screen_buffer_x);
-            layer2_load_screen(screen_y[i], &off_screen_buffer_y);
-            layer2_load_screen(screen_xy[i], &off_screen_buffer_xy);
+            layer2_load_screen(screen_x[i], &off_screen_buffer_x, false);
+            layer2_load_screen(screen_y[i], &off_screen_buffer_y, false);
+            layer2_load_screen(screen_xy[i], &off_screen_buffer_xy, false);
         }
 
         intrinsic_halt();
