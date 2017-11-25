@@ -1,7 +1,7 @@
 ################################################################################
 # Stefan Bylund 2017
 #
-# Makefile for compiling layer 2 demo program for Sinclair ZX Spectrum Next.
+# Makefile for compiling layer 2 demo programs for Sinclair ZX Spectrum Next.
 # Supports both the SCCZ80 and SDCC compilers.
 ################################################################################
 
@@ -23,8 +23,6 @@ ZXNEXT_LAYER2_LIB_SDCC_IX := $(ZXNEXT_LAYER2)/lib/sdcc_ix
 
 ZXNEXT_LAYER2_LIB_SDCC_IY := $(ZXNEXT_LAYER2)/lib/sdcc_iy
 
-SRCS := src/zxnext_layer2_demo.c
-
 BINDIR_SCCZ80 := bin/sccz80
 
 BINDIR_SDCC_IX := bin/sdcc_ix
@@ -41,15 +39,24 @@ all: all_sccz80 all_sdcc_ix all_sdcc_iy
 
 all_sccz80:
 	$(MKDIR) $(BINDIR_SCCZ80)
-	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) $(SRCS) -o $(BINDIR_SCCZ80)/zxnext_layer2_demo -create-app $(SNA)
+	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SCCZ80)/zxnext_draw_demo -create-app $(SNA)
+	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SCCZ80)/zxnext_perf_demo -create-app $(SNA)
+	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SCCZ80)/zxnext_scroll_demo -create-app $(SNA)
+	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SCCZ80)/zxnext_misc_demo -create-app $(SNA)
 
 all_sdcc_ix:
 	$(MKDIR) $(BINDIR_SDCC_IX)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) $(SRCS) -o $(BINDIR_SDCC_IX)/zxnext_layer2_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SDCC_IX)/zxnext_draw_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SDCC_IX)/zxnext_perf_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SDCC_IX)/zxnext_scroll_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SDCC_IX)/zxnext_misc_demo -create-app $(SNA)
 
 all_sdcc_iy:
 	$(MKDIR) $(BINDIR_SDCC_IY)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) $(SRCS) -o $(BINDIR_SDCC_IY)/zxnext_layer2_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SDCC_IY)/zxnext_draw_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SDCC_IY)/zxnext_perf_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SDCC_IY)/zxnext_scroll_demo -create-app $(SNA)
+	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SDCC_IY)/zxnext_misc_demo -create-app $(SNA)
 
 debug_sccz80: DEBUG = $(DEBUGFLAGS)
 
@@ -68,10 +75,10 @@ distro:
 	$(MAKE) all BUILD_SNA=true
 	$(RM) tmp
 	$(MKDIR) tmp/zxnext_layer2_demo
-	$(CP) bin/sdcc_iy/zxnext_layer2_demo.tap tmp/zxnext_layer2_demo
-	$(CP) bin/sdcc_iy/zxnext_layer2_demo.sna tmp/zxnext_layer2_demo
+	$(CP) bin/sdcc_iy/*.tap tmp/zxnext_layer2_demo
+	$(CP) bin/sdcc_iy/*.sna tmp/zxnext_layer2_demo
 	$(CP) resources/*.nxi tmp/zxnext_layer2_demo
-	$(CP) src/zxnext_layer2_demo.c tmp/zxnext_layer2_demo
+	$(CP) src/*.c tmp/zxnext_layer2_demo
 	$(CP) readme.txt tmp/zxnext_layer2_demo
 	$(RM) build/zxnext_layer2_demo.zip
 	cd tmp; $(ZIP) ../build/zxnext_layer2_demo.zip zxnext_layer2_demo
