@@ -25,7 +25,7 @@ and shadow layer 2 screens paged to the top 16K RAM instead of the bottom 16K.
 ## Download
 
 The latest version of these programs along with their source code and resources
-can be downloaded [here](build/zxnext_layer2_demo.zip). The included readme.txt
+can be downloaded **[here](build/zxnext_layer2_demo.zip)**. The included readme.txt
 file explains how to start the programs.
 
 ## How to Build
