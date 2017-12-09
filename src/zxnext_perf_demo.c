@@ -3,9 +3,9 @@
  *
  * A layer 2 drawing performance demo program for Sinclair ZX Spectrum Next.
  *
- * zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy --max-allocs-per-node200000
- *   -L<zxnext_layer2>/lib/sdcc_iy -lzxnext_layer2 -I<zxnext_layer2>/include
- *   zxnext_perf_demo.c -o zxnext_perf_demo -create-app [-Cz"--sna"]
+ * zcc +zx [-subtype=sna] -vn -SO3 -startup=30 -clib=sdcc_iy
+ *   --max-allocs-per-node200000 -L<zxnext_layer2>/lib/sdcc_iy -lzxnext_layer2
+ *   -I<zxnext_layer2>/include zxnext_perf_demo.c -o zxnext_perf_demo -create-app
  ******************************************************************************/
 
 #include <arch/zx.h>
