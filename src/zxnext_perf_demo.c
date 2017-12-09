@@ -22,7 +22,7 @@
 #include "zxnext_layer2.h"
 
 #pragma output CRT_ORG_CODE = 0x6164
-#pragma output REGISTER_SP = -1
+#pragma output REGISTER_SP = 0xFF58
 #pragma output CLIB_MALLOC_HEAP_SIZE = 0
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
