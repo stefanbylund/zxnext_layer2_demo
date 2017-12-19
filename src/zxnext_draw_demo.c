@@ -25,6 +25,7 @@
 #pragma output CLIB_MALLOC_HEAP_SIZE = 0
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
+#pragma printf = "%c %s"
 
 #define printAt(row, col, str) printf("\x16%c%c%s", (row), (col), (str))
 
