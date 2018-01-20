@@ -43,8 +43,6 @@ static void init_tests(void);
 
 static void select_test(void);
 
-static void flip_main_shadow_screen(void);
-
 static void test_clear_screen(layer2_screen_t *screen);
 
 static void test_load_screen(layer2_screen_t *screen);
@@ -74,8 +72,6 @@ static uint8_t test_number = 0;
 static layer2_screen_t shadow_screen = {SHADOW_SCREEN};
 
 static layer2_screen_t off_screen = {OFF_SCREEN, 0, 1, 3};
-
-static bool flip_to_8_11 = false;
 
 static uint8_t tall_sprite[192];
 
@@ -152,6 +148,10 @@ static void init_tests(void)
 
     memset(tall_sprite, 0x27, 192);
     layer2_configure(true, false, false, 0);
+
+    // TODO: CSpect doesn't have these default values.
+    layer2_set_main_screen_ram_bank(8);
+    layer2_set_shadow_screen_ram_bank(11);
 }
 
 static void select_test(void)
@@ -255,29 +255,13 @@ static void select_test(void)
     test_number = (test_number + 1) % 30;
 }
 
-static void flip_main_shadow_screen(void)
-{
-    if (flip_to_8_11)
-    {
-        layer2_set_main_screen_ram_bank(8);
-        layer2_set_shadow_screen_ram_bank(11);
-    }
-    else
-    {
-        layer2_set_main_screen_ram_bank(11);
-        layer2_set_shadow_screen_ram_bank(8);
-    }
-
-    flip_to_8_11 = !flip_to_8_11;
-}
-
 static void test_clear_screen(layer2_screen_t *screen)
 {
     layer2_clear_screen(0xDB, screen);
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -291,7 +275,7 @@ static void test_load_screen(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -301,14 +285,18 @@ static void test_load_screen(layer2_screen_t *screen)
 
 static void test_load_screen_with_palette(layer2_screen_t *screen)
 {
+    // FIXME: CSpect doesn't support using the second layer 2 palette.
+    // Instead we reset the first layer 2 palette at the end of the test.
+
     // Load screen with palette using second layer 2 palette.
-    layer2_set_display_palette(false);
-    layer2_set_rw_palette(false);
+    //layer2_set_display_palette(false);
+    //layer2_set_rw_palette(false);
+    layer2_set_rw_palette(true);
     layer2_load_screen("img_pal.nxi", screen, true);
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -317,8 +305,9 @@ static void test_load_screen_with_palette(layer2_screen_t *screen)
 
     in_wait_key();
     // Reset to first layer 2 palette.
-    layer2_set_display_palette(true);
-    layer2_set_rw_palette(true);
+    //layer2_set_display_palette(true);
+    //layer2_set_rw_palette(true);
+    layer2_reset_palette();
 }
 
 static void test_draw_pixel(layer2_screen_t *screen)
@@ -362,7 +351,7 @@ static void test_draw_pixel(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -389,7 +378,7 @@ static void test_draw_line(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -422,7 +411,7 @@ static void test_draw_rect(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -453,7 +442,7 @@ static void test_fill_rect(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -483,7 +472,7 @@ static void test_draw_text(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -516,7 +505,7 @@ static void test_blit(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
@@ -549,7 +538,7 @@ static void test_blit_transparent(layer2_screen_t *screen)
 
     if (IS_SHADOW_SCREEN(screen))
     {
-        flip_main_shadow_screen();
+        layer2_flip_main_shadow_screen();
     }
     else if (IS_OFF_SCREEN(screen))
     {
