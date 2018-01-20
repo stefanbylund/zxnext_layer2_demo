@@ -30,7 +30,7 @@ BINDIR_SDCC_IX := bin/sdcc_ix
 BINDIR_SDCC_IY := bin/sdcc_iy
 
 ifeq ($(BUILD_SNA),true)
-SNA := -Cz"--sna"
+SNA := -subtype=sna
 endif
 
 DEBUGFLAGS := --list --c-code-in-asm
@@ -39,24 +39,24 @@ all: all_sccz80 all_sdcc_ix all_sdcc_iy
 
 all_sccz80:
 	$(MKDIR) $(BINDIR_SCCZ80)
-	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SCCZ80)/zxnext_draw_demo -create-app $(SNA)
-	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SCCZ80)/zxnext_perf_demo -create-app $(SNA)
-	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SCCZ80)/zxnext_scroll_demo -create-app $(SNA)
-	zcc +zx -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SCCZ80)/zxnext_misc_demo -create-app $(SNA)
+	zcc +zxn $(SNA) -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SCCZ80)/zxnext_draw_demo -create-app
+	zcc +zxn $(SNA) -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SCCZ80)/zxnext_perf_demo -create-app
+	zcc +zxn $(SNA) -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SCCZ80)/zxnext_scroll_demo -create-app
+	zcc +zxn $(SNA) -vn -O3 -startup=30 -clib=new -m $(DEBUG) -L$(ZXNEXT_LAYER2_LIB_SCCZ80) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SCCZ80)/zxnext_misc_demo -create-app
 
 all_sdcc_ix:
 	$(MKDIR) $(BINDIR_SDCC_IX)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SDCC_IX)/zxnext_draw_demo -create-app $(SNA)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SDCC_IX)/zxnext_perf_demo -create-app $(SNA)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SDCC_IX)/zxnext_scroll_demo -create-app $(SNA)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SDCC_IX)/zxnext_misc_demo -create-app $(SNA)
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SDCC_IX)/zxnext_draw_demo -create-app
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SDCC_IX)/zxnext_perf_demo -create-app
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SDCC_IX)/zxnext_scroll_demo -create-app
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_ix -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IX) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SDCC_IX)/zxnext_misc_demo -create-app
 
 all_sdcc_iy:
 	$(MKDIR) $(BINDIR_SDCC_IY)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SDCC_IY)/zxnext_draw_demo -create-app $(SNA)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SDCC_IY)/zxnext_perf_demo -create-app $(SNA)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SDCC_IY)/zxnext_scroll_demo -create-app $(SNA)
-	zcc +zx -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SDCC_IY)/zxnext_misc_demo -create-app $(SNA)
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_draw_demo.c -o $(BINDIR_SDCC_IY)/zxnext_draw_demo -create-app
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_perf_demo.c -o $(BINDIR_SDCC_IY)/zxnext_perf_demo -create-app
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_scroll_demo.c -o $(BINDIR_SDCC_IY)/zxnext_scroll_demo -create-app
+	zcc +zxn $(SNA) -vn -SO3 -startup=30 -clib=sdcc_iy -m $(DEBUG) --max-allocs-per-node200000 -L$(ZXNEXT_LAYER2_LIB_SDCC_IY) -lzxnext_layer2 -I$(ZXNEXT_LAYER2_INCLUDE) src/zxnext_misc_demo.c -o $(BINDIR_SDCC_IY)/zxnext_misc_demo -create-app
 
 debug_sccz80: DEBUG = $(DEBUGFLAGS)
 

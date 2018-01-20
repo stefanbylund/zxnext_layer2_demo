@@ -1,3 +1,0 @@
-* Switch to zxn target in z88dk when stable and replace -Cz"--sna" with -subtype=sna.
-
-* Replace -Cz"--sna" with -subtype=sna.
