@@ -3,12 +3,12 @@
  *
  * A layer 2 drawing demo program for Sinclair ZX Spectrum Next.
  *
- * zcc +zx [-subtype=sna] -vn -SO3 -startup=30 -clib=sdcc_iy
+ * zcc +zxn [-subtype=sna] -vn -SO3 -startup=30 -clib=sdcc_iy
  *   --max-allocs-per-node200000 -L<zxnext_layer2>/lib/sdcc_iy -lzxnext_layer2
  *   -I<zxnext_layer2>/include zxnext_draw_demo.c -o zxnext_draw_demo -create-app
  ******************************************************************************/
 
-#include <arch/zx.h>
+#include <arch/zxn.h>
 #include <input.h>
 #include <z80.h>
 #include <intrinsic.h>
