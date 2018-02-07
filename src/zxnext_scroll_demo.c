@@ -21,7 +21,7 @@
 #include "zxnext_layer2.h"
 
 #pragma output CRT_ORG_CODE = 0x6164
-#pragma output REGISTER_SP = 0xBFFF
+#pragma output REGISTER_SP = 0xC000
 #pragma output CLIB_MALLOC_HEAP_SIZE = 0
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
@@ -81,6 +81,10 @@ static void init_hardware(void)
 
     z80_outp(REGISTER_NUMBER_PORT, TURBO_MODE_REGISTER);
     z80_outp(REGISTER_VALUE_PORT, 2);
+
+    // TODO: This is not set as default in some emulators.
+    layer2_set_main_screen_ram_bank(8);
+    layer2_set_shadow_screen_ram_bank(11);
 }
 
 static void init_isr(void)
@@ -150,7 +154,7 @@ static void test_scroll_screen_horizontally(void)
     uint8_t offset_x = 0;
     bool increment = true;
 
-    layer2_load_screen("screen1.nxi", NULL, false);
+    layer2_load_screen("screen1.nxi", NULL, 7, false);
 
     // 0, 1, 2, ..., 254, 255, 0, 255, 254, ..., 2, 1, 0, ...
 
@@ -183,7 +187,7 @@ static void test_scroll_screen_vertically(void)
     uint8_t offset_y = 0;
     bool increment = true;
 
-    layer2_load_screen("screen1.nxi", NULL, false);
+    layer2_load_screen("screen1.nxi", NULL, 7, false);
 
     // 0, 1, 2, ..., 190, 191, 0, 191, 190, ..., 2, 1, 0, ...
 
@@ -218,7 +222,7 @@ static void test_scroll_screen_diagonally(void)
     bool increment_x = true;
     bool increment_y = true;
 
-    layer2_load_screen("screen1.nxi", NULL, false);
+    layer2_load_screen("screen1.nxi", NULL, 7, false);
 
     while (!in_inkey())
     {
@@ -280,14 +284,14 @@ static void test_scroll_multi_screen_horizontally(void)
     uint8_t fill_x;
     bool increment = true;
 
-    layer2_load_screen(screen_files[next_screen_num], NULL, false);
+    layer2_load_screen(screen_files[next_screen_num], NULL, 7, false);
 
     while (!in_inkey())
     {
         if (offset_x == 0)
         {
             next_screen_num = increment ? next_screen_num + 1 : next_screen_num - 1;
-            layer2_load_screen(screen_files[next_screen_num], &off_screen, false);
+            layer2_load_screen(screen_files[next_screen_num], &off_screen, 7, false);
         }
 
         intrinsic_halt();
@@ -338,14 +342,14 @@ static void test_scroll_multi_screen_vertically(void)
     uint8_t fill_y;
     bool increment = true;
 
-    layer2_load_screen(screen_files[next_screen_num], NULL, false);
+    layer2_load_screen(screen_files[next_screen_num], NULL, 7, false);
 
     while (!in_inkey())
     {
         if (offset_y == 0)
         {
             next_screen_num = increment ? next_screen_num + 1 : next_screen_num - 1;
-            layer2_load_screen(screen_files[next_screen_num], &off_screen, false);
+            layer2_load_screen(screen_files[next_screen_num], &off_screen, 7, false);
         }
 
         intrinsic_halt();
@@ -410,7 +414,7 @@ static void test_scroll_multi_screen_diagonally(void)
     bool increment_x = true;
     bool increment_y = true;
 
-    layer2_load_screen("diag1.nxi", NULL, false);
+    layer2_load_screen("diag1.nxi", NULL, 7, false);
 
     while (!in_inkey())
     {
@@ -427,9 +431,9 @@ static void test_scroll_multi_screen_diagonally(void)
         if ((offset_x == 0) || (offset_y == 0))
         {
             uint8_t i = next_screen_x + (next_screen_y << 1);
-            layer2_load_screen(screen_x[i], &off_screen_buffer_x, false);
-            layer2_load_screen(screen_y[i], &off_screen_buffer_y, false);
-            layer2_load_screen(screen_xy[i], &off_screen_buffer_xy, false);
+            layer2_load_screen(screen_x[i], &off_screen_buffer_x, 7, false);
+            layer2_load_screen(screen_y[i], &off_screen_buffer_y, 7, false);
+            layer2_load_screen(screen_xy[i], &off_screen_buffer_xy, 7, false);
         }
 
         intrinsic_halt();

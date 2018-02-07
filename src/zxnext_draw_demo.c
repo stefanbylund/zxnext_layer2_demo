@@ -21,7 +21,7 @@
 #include "zxnext_layer2.h"
 
 #pragma output CRT_ORG_CODE = 0x6164
-#pragma output REGISTER_SP = 0xBFFF
+#pragma output REGISTER_SP = 0xC000
 #pragma output CLIB_MALLOC_HEAP_SIZE = 0
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
@@ -113,6 +113,10 @@ static void init_hardware(void)
 
     z80_outp(REGISTER_NUMBER_PORT, TURBO_MODE_REGISTER);
     z80_outp(REGISTER_VALUE_PORT, 2);
+
+    // TODO: This is not set as default in some emulators.
+    layer2_set_main_screen_ram_bank(8);
+    layer2_set_shadow_screen_ram_bank(11);
 }
 
 static void init_isr(void)
@@ -148,10 +152,6 @@ static void init_tests(void)
 
     memset(tall_sprite, 0x27, 192);
     layer2_configure(true, false, false, 0);
-
-    // TODO: CSpect doesn't have these default values.
-    layer2_set_main_screen_ram_bank(8);
-    layer2_set_shadow_screen_ram_bank(11);
 }
 
 static void select_test(void)
@@ -271,7 +271,7 @@ static void test_clear_screen(layer2_screen_t *screen)
 
 static void test_load_screen(layer2_screen_t *screen)
 {
-    layer2_load_screen("screen1.nxi", screen, false);
+    layer2_load_screen("screen1.nxi", screen, 7, false);
 
     if (IS_SHADOW_SCREEN(screen))
     {
@@ -292,7 +292,7 @@ static void test_load_screen_with_palette(layer2_screen_t *screen)
     //layer2_set_display_palette(false);
     //layer2_set_rw_palette(false);
     layer2_set_rw_palette(true);
-    layer2_load_screen("img_pal.nxi", screen, true);
+    layer2_load_screen("img_pal.nxi", screen, 7, true);
 
     if (IS_SHADOW_SCREEN(screen))
     {

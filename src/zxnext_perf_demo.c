@@ -22,7 +22,7 @@
 #include "zxnext_layer2.h"
 
 #pragma output CRT_ORG_CODE = 0x6164
-#pragma output REGISTER_SP = 0xFF58
+#pragma output REGISTER_SP = 0xE000
 #pragma output CLIB_MALLOC_HEAP_SIZE = 0
 #pragma output CLIB_STDIO_HEAP_SIZE = 0
 #pragma output CLIB_FOPEN_MAX = -1
@@ -106,6 +106,10 @@ static void init_hardware(void)
 
     z80_outp(REGISTER_NUMBER_PORT, TURBO_MODE_REGISTER);
     z80_outp(REGISTER_VALUE_PORT, 2);
+
+    // TODO: This is not set as default in some emulators.
+    layer2_set_main_screen_ram_bank(8);
+    layer2_set_shadow_screen_ram_bank(11);
 }
 
 static void init_isr(void)
@@ -193,7 +197,7 @@ static void test_load_screen_many(void)
 
     while (!in_inkey())
     {
-        layer2_load_screen(toggle ? "screen1.nxi" : "screen2.nxi", NULL, false);
+        layer2_load_screen(toggle ? "screen1.nxi" : "screen2.nxi", NULL, 7, false);
         toggle = !toggle;
         // A short delay so we have time to actually see the screen.
         z80_delay_ms(500);
