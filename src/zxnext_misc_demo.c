@@ -74,7 +74,7 @@ static void init_hardware(void)
 {
     // Put Z80 in 14 MHz turbo mode.
     ZXN_NEXTREGA(REG_PERIPHERAL_2, ZXN_READ_REG(REG_PERIPHERAL_2) | RP2_ENABLE_TURBO);
-        ZXN_NEXTREG(REG_TURBO_MODE, RTM_14MHZ);
+    ZXN_NEXTREG(REG_TURBO_MODE, RTM_14MHZ);
 
     // TODO: This is not set as default in some emulators.
     layer2_set_main_screen_ram_bank(8);
