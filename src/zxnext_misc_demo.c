@@ -3,7 +3,7 @@
  *
  * A layer 2 screen demo program for Sinclair ZX Spectrum Next.
  *
- * zcc +zxn [-subtype=sna] -vn -SO3 -startup=30 -clib=sdcc_iy
+ * zcc +zxn -subtype=nex -vn -SO3 -startup=30 -clib=sdcc_iy
  *   --max-allocs-per-node200000 -L<zxnext_layer2>/lib/sdcc_iy -lzxnext_layer2
  *   -I<zxnext_layer2>/include zxnext_misc_demo.c -o zxnext_misc_demo -create-app
  ******************************************************************************/
@@ -36,7 +36,7 @@
 #define __preserves_regs(...)
 #endif
 
-#define printAt(row, col, str) printf("\x16%c%c%s", (row), (col), (str))
+#define printAt(col, row, str) printf("\x16%c%c%s", (col), (row), (str))
 
 /*******************************************************************************
  * Function Prototypes
@@ -72,11 +72,12 @@ static uint8_t test_number = 0;
 
 static void init_hardware(void)
 {
-    // Put Z80 in 14 MHz turbo mode.
-    ZXN_NEXTREGA(REG_PERIPHERAL_2, ZXN_READ_REG(REG_PERIPHERAL_2) | RP2_ENABLE_TURBO);
-    ZXN_NEXTREG(REG_TURBO_MODE, RTM_14MHZ);
+    // Put Z80 in 28 MHz turbo mode.
+    ZXN_NEXTREG(REG_TURBO_MODE, 0x03);
 
-    // TODO: This is not set as default in some emulators.
+    // Disable RAM memory contention.
+    ZXN_NEXTREGA(REG_PERIPHERAL_3, ZXN_READ_REG(REG_PERIPHERAL_3) | RP3_DISABLE_CONTENTION);
+
     layer2_set_main_screen_ram_bank(8);
     layer2_set_shadow_screen_ram_bank(11);
 }
@@ -103,8 +104,8 @@ static void create_start_screen(void)
     zx_border(INK_WHITE);
     zx_cls(INK_BLACK | PAPER_WHITE);
 
-    printAt(7,  5, "Press any key to start");
-    printAt(15, 1, "Press any key to switch screen");
+    printAt(5,  7, "Press any key to start");
+    printAt(1, 15, "Press any key to switch screen");
 }
 
 static void init_tests(void)
@@ -144,7 +145,7 @@ static void test_layer2_over_ula(void)
     // of the layer 2 screen so the underlying ULA screen shows through.
 
     zx_cls(INK_BLACK | PAPER_WHITE);
-    printAt(12, 11, "ULA SCREEN");
+    printAt(11, 12, "ULA SCREEN");
 
     layer2_clear_screen(0x37, NULL);
     layer2_draw_text(5, 9, "LAYER 2 SCREEN", 0x88, NULL);
@@ -167,7 +168,7 @@ static void test_ula_over_layer2(void)
     // the transparency colour is set to black (0x00)...
 
     zx_cls(INK_BLACK | PAPER_WHITE);
-    printAt(5, 11, "ULA SCREEN");
+    printAt(11, 5, "ULA SCREEN");
     zx_cls_wc_attr(&rect, PAPER_BLACK);
 
     layer2_clear_screen(0x37, NULL);

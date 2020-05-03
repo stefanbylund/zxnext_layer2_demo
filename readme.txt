@@ -36,7 +36,7 @@ Run in CSpect emulator
 
 3. Run the programs in the CSpect emulator:
 
-> CSpect.exe -zxnext -mmc=<zxnext_layer2_demo>/ <zxnext_layer2_demo>/<program>.sna
+> CSpect.exe -w2 -tv -zxnext -mmc=<zxnext_layer2_demo>/ <zxnext_layer2_demo>/<program>.nex
 
 Note that the -mmc path must end with a / or \ character!
 
@@ -46,12 +46,10 @@ Run in ZEsarUX emulator
 1. The absolute path to the zxnext_layer2_demo folder (i.e. this folder) is
    denoted as <zxnext_layer2_demo>.
 
-2. Install the latest version of the ZEsarUX emulator from https://sourceforge.net/projects/zesarux/.
+2. Install the latest version of the ZEsarUX emulator from https://github.com/chernandezba/zesarux.
 
-3. Copy all *.nxi files to <zesarux>/extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE.
+3. Run the programs in the ZEsarUX emulator:
 
-4. Run the programs in the ZEsarUX emulator:
-
-> zesarux.exe --machine tbblue --enable-mmc --enable-divmmc-ports --mmc-file tbblue.mmc
-  --enable-esxdos-handler --esxdos-root-dir extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE --quickexit
-  --tape <zxnext_layer2_demo>/<program>.tap
+> zesarux.exe --noconfigfile --machine tbblue --enabletimexvideo --tbblue-fast-boot-mode
+  --quickexit --enable-esxdos-handler --esxdos-root-dir <zxnext_layer2_demo>
+  <zxnext_layer2_demo>/<program>.nex

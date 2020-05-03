@@ -3,7 +3,7 @@
  *
  * A layer 2 drawing demo program for Sinclair ZX Spectrum Next.
  *
- * zcc +zxn [-subtype=sna] -vn -SO3 -startup=30 -clib=sdcc_iy
+ * zcc +zxn -subtype=nex -vn -SO3 -startup=30 -clib=sdcc_iy
  *   --max-allocs-per-node200000 -L<zxnext_layer2>/lib/sdcc_iy -lzxnext_layer2
  *   -I<zxnext_layer2>/include zxnext_draw_demo.c -o zxnext_draw_demo -create-app
  ******************************************************************************/
@@ -36,7 +36,7 @@
 #define __preserves_regs(...)
 #endif
 
-#define printAt(row, col, str) printf("\x16%c%c%s", (row), (col), (str))
+#define printAt(col, row, str) printf("\x16%c%c%s", (col), (row), (str))
 
 /*******************************************************************************
  * Function Prototypes
@@ -110,11 +110,12 @@ static const uint8_t sprite[] =
 
 static void init_hardware(void)
 {
-    // Put Z80 in 14 MHz turbo mode.
-    ZXN_NEXTREGA(REG_PERIPHERAL_2, ZXN_READ_REG(REG_PERIPHERAL_2) | RP2_ENABLE_TURBO);
-    ZXN_NEXTREG(REG_TURBO_MODE, RTM_14MHZ);
+    // Put Z80 in 28 MHz turbo mode.
+    ZXN_NEXTREG(REG_TURBO_MODE, 0x03);
 
-    // TODO: This is not set as default in some emulators.
+    // Disable RAM memory contention.
+    ZXN_NEXTREGA(REG_PERIPHERAL_3, ZXN_READ_REG(REG_PERIPHERAL_3) | RP3_DISABLE_CONTENTION);
+
     layer2_set_main_screen_ram_bank(8);
     layer2_set_shadow_screen_ram_bank(11);
 }
@@ -141,8 +142,8 @@ static void create_start_screen(void)
     zx_border(INK_WHITE);
     zx_cls(INK_BLACK | PAPER_WHITE);
 
-    printAt(7,  5, "Press any key to start");
-    printAt(15, 1, "Press any key to switch screen");
+    printAt(5,  7, "Press any key to start");
+    printAt(1, 15, "Press any key to switch screen");
 }
 
 static void init_tests(void)
@@ -285,13 +286,9 @@ static void test_load_screen(layer2_screen_t *screen)
 
 static void test_load_screen_with_palette(layer2_screen_t *screen)
 {
-    // FIXME: CSpect doesn't support using the second layer 2 palette.
-    // Instead we reset the first layer 2 palette at the end of the test.
-
     // Load screen with palette using second layer 2 palette.
-    //layer2_set_display_palette(false);
-    //layer2_set_rw_palette(false);
-    layer2_set_rw_palette(true);
+    layer2_set_display_palette(false);
+    layer2_set_rw_palette(false);
     layer2_load_screen("img_pal.nxi", screen, 7, true);
 
     if (IS_SHADOW_SCREEN(screen))
@@ -305,9 +302,8 @@ static void test_load_screen_with_palette(layer2_screen_t *screen)
 
     in_wait_key();
     // Reset to first layer 2 palette.
-    //layer2_set_display_palette(true);
-    //layer2_set_rw_palette(true);
-    layer2_reset_palette();
+    layer2_set_display_palette(true);
+    layer2_set_rw_palette(true);
 }
 
 static void test_draw_pixel(layer2_screen_t *screen)

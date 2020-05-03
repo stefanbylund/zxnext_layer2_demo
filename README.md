@@ -22,6 +22,9 @@ diagonal hardware scrolling of a single screen and between multiple screens.
 * zxnext_misc_demo: This program tests layer priorities and drawing on the main
 and shadow layer 2 screens paged to the top 16K RAM instead of the bottom 16K.
 
+**Note:** This project still works but is a bit out-of-date. It will be updated
+someday when I have the time ;)
+
 ## Download
 
 The latest version of these programs along with their source code and resources
@@ -39,7 +42,7 @@ below:
 set of Unix commands to your path.
 
 2. Install the latest version of [z88dk](https://github.com/z88dk/z88dk) and the
-[ZEsarUX](https://sourceforge.net/projects/zesarux/) or
+[ZEsarUX](https://github.com/chernandezba/zesarux) or
 [CSpect](https://dailly.blogspot.se/) emulator.
 
 3. Download [zxnext_layer2](https://github.com/stefanbylund/zxnext_layer2/blob/master/build/zxnext_layer2.zip)
@@ -55,22 +58,15 @@ following command:
 a common parent directory.
 
 6. Go to the zxnext_layer2_demo directory and enter the following command to
-build a TAP file or an SNA file if BUILD_SNA=true is specified:
+build a NEX file:
 
-> make all [BUILD_SNA=true]
+> make all
 
-7. For the ZEsarUX emulator, copy all *.nxi files from \<zxnext_layer2_demo_folder\>/resources
-to \<zesarux\>/extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE. For the CSpect
-emulator, pass the option -mmc=\<zxnext_layer2_demo_folder\>/resources/.
+7. Make sure the \<zxnext_layer2_demo_folder\>/resources directory is the root
+directory in the ZEsarUX or CSpect emulator.
 
-8. Run the zxnext_layer2_demo/bin/\<compiler-flavour\>/\<program\>.tap file in
-the ZEsarUX emulator or the
-zxnext_layer2_demo/bin/\<compiler-flavour\>/\<program\>.sna file in the CSpect
-emulator.
-
-**Note:** Since the Sinclair ZX Spectrum Next is still under development and all
-tools need to catch up with the latest specs, it is important to use the latest
-version of zxnext_layer2, z88dk and ZEsarUX or CSpect.
+8. Run the zxnext_layer2_demo/bin/\<compiler-flavour\>/\<program\>.nex file in
+the ZEsarUX or CSpect emulator.
 
 **Tip:** If you don't care for makefiles or don't want to install
 MinGW/UnxUtils/Cygwin on Windows, you can build zxnext_layer2_demo manually
@@ -80,14 +76,15 @@ zxnext_layer2_demo source files.
 **Tip:** To start the ZEsarUX emulator directly in Sinclair ZX Spectrum Next
 mode, start it with the following options:
 
-> zesarux --machine tbblue --enable-mmc --enable-divmmc-ports --mmc-file tbblue.mmc
-    --enable-esxdos-handler --esxdos-root-dir extras/media/spectrum/esxdos_handler/0.8.6_TBBLUE --quickexit
+> zesarux --noconfigfile --machine tbblue --enabletimexvideo --tbblue-fast-boot-mode
+  --quickexit --enable-esxdos-handler --esxdos-root-dir \<zxnext_layer2_demo\>
+  \<program\>.nex
 
 **Tip:** To start the CSpect emulator directly in Sinclair ZX Spectrum Next
 mode, start it with the options below. Note that the -mmc path must end with a
 / or \ character!
 
-> CSpect -zxnext -mmc=\<zxnext_layer2_demo_folder\>/resources/ \<program\>.sna
+> CSpect -w2 -tv -zxnext -mmc=\<zxnext_layer2_demo_folder\>/ \<program\>.nex
 
 ## License
 
